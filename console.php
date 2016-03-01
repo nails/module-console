@@ -38,8 +38,7 @@ if (realpath($system_path) !== false) {
 $system_path = rtrim($system_path, '/') . '/';
 define('BASEPATH', str_replace("\\", "/", $system_path));
 
-// define('FCPATH', str_replace(SELF, '', __FILE__) . '../../');
-define('FCPATH', '/Users/pablo/Sites/GitRepos/nails/site-dev/');
+define('FCPATH', realpath(str_replace(SELF, '', __FILE__) . '../../../') . '/');
 
 define('APPPATH', 'application/');
 
