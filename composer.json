@@ -21,7 +21,8 @@
     "prefer-stable": true,
     "require":
     {
-        "nailsapp/common": "dev-develop"
+        "nailsapp/common": "dev-develop",
+        "symfony/console": "2.*"
     },
     "require-dev":
     {
