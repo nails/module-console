@@ -80,6 +80,9 @@ if (FCPATH . 'vendor/nailsapp/module-console/console.php' !== __FILE__) {
     );
 }
 
+//  Set the working directory so that requires etc work as they do in the mian application
+chdir(FCPATH);
+
 /*
  *---------------------------------------------------------------
  * APP SETTINGS
