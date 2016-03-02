@@ -20,6 +20,28 @@ use Nails\Factory;
 use Symfony\Component\Console\Application;
 
 // --------------------------------------------------------------------------
+
+if (!function_exists('_NAILS_ERROR')) {
+
+    function _NAILS_ERROR($sError, $sSubject = '')
+    {
+        $sSubject = 'ERROR: ' . $sSubject;
+        echo "\n\n";
+        if (!empty($sSubject)) {
+            echo str_repeat('-', strlen($sSubject));
+            echo "\n" . strtoupper($sSubject) . "\n";
+            echo str_repeat('-', strlen($sSubject));
+            echo "\n\n";
+        }
+
+        echo wordwrap($sError, 100, "\n");
+
+        echo "\n\n";
+        exit(0);
+    }
+}
+
+// --------------------------------------------------------------------------
 // --------------------------------------------------------------------------
 //  Below copied from CodeIgniter's index.php
 //  Various code rely heavily on these constants
@@ -47,22 +69,15 @@ define('APPPATH', 'application/');
 // --------------------------------------------------------------------------
 // --------------------------------------------------------------------------
 
-if (!function_exists('_NAILS_ERROR')) {
-
-    function _NAILS_ERROR($error, $subject = '')
-    {
-        echo '<style type="text/css">';
-            echo 'p {font-family:monospace;margin:20px 10px;}';
-            echo 'strong { color:red;}';
-            echo 'code { padding:5px;border:1px solid #CCC;background:#EEE }';
-        echo '</style>';
-        echo '<p>';
-            echo '<strong>ERROR:</strong> ';
-            echo $subject ? '<em>' . $subject . '</em> - ' : '';
-            echo $error;
-        echo '</p>';
-        exit(0);
-    }
+//  Detect if FCPATH resolves to the same location as this file, if it doesn't then
+//  Nails is probably being run as a symlink and must be halted.
+if (FCPATH . 'vendor/nailsapp/module-console/console.php' !== __FILE__) {
+    _NAILS_ERROR(
+        'console.php does not reside where it is expected (in the app\'s vendor/nailsapp folder). ' .
+        'This might be because you have symlinked the vendor/nailsapp directory (useful when developing) '.
+        'This however causes loading errors and must be rectified.',
+        'Invalid location of console.php'
+    );
 }
 
 /*
@@ -148,19 +163,35 @@ Factory::helper('log');
 
 //  Set Common and App locations
 $aAppLocations = array(
-    array(FCPATH . 'vendor/nailsapp/common/src/Console/Command/', 'Nails\Common'),
-    array(FCPATH . 'src/Console/Command/', 'App')
+    array(FCPATH . 'vendor/nailsapp/common/src/Common/Console/Command/', 'Nails\Common\Console\Command'),
+    array(FCPATH . 'src/Console/Command/', 'App\Console\Command')
 );
 
 //  Look for apps provided by the modules
 $aModules = _NAILS_GET_MODULES();
 foreach ($aModules as $oModule) {
-    dumpanddie($oModule);
-    $aAppLocations[] = $oModule->path . 'src/Console/Command';
+    $aAppLocations[] = array(
+        $oModule->path . 'src/Console/Command',
+        $oModule->namespace . 'Console\Command'
+    );
 }
 
-// foreach ($aAppLocations as $oModule) {
-dumpanddie($aAppLocations);
+Factory::helper('directory');
+$aApps = array();
+
+foreach ($aAppLocations as $aLocation) {
+
+    list($sPath, $sNamespace) = $aLocation;
+
+    $aDirMap = directory_map($sPath);
+    if (!empty($aDirMap)) {
+        foreach ($aDirMap as $sFile) {
+            $aFileInfo = pathinfo($sFile);
+            $sFileName =  basename($sFile, '.' . $aFileInfo['extension']);
+            $aApps[]   = $sNamespace . '\\' . $sFileName;
+        }
+    }
+}
 
 //  Instantiate and run the application
 $app = new Application();

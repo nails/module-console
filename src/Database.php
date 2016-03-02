@@ -1,6 +1,6 @@
 <?php
 
-namespace Nails\Common\Console;
+namespace Nails\Console;
 
 use Nails\Common\Exception\Database\ConnectionException;
 
