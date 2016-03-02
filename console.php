@@ -146,19 +146,21 @@ Factory::helper('log');
 
 // --------------------------------------------------------------------------
 
-//  Get common Apps
-$aApps = array(
-    'Nails\Common\Console\Command\Deploy',
-    'Nails\Common\Console\Command\Install',
-    'Nails\Common\Console\Command\Migrate',
-    'Nails\Common\Console\Command\Test'
+//  Set Common and App locations
+$aAppLocations = array(
+    array(FCPATH . 'vendor/nailsapp/common/src/Console/Command/', 'Nails\Common'),
+    array(FCPATH . 'src/Console/Command/', 'App')
 );
 
 //  Look for apps provided by the modules
 $aModules = _NAILS_GET_MODULES();
 foreach ($aModules as $oModule) {
-    //  @todo
+    dumpanddie($oModule);
+    $aAppLocations[] = $oModule->path . 'src/Console/Command';
 }
+
+// foreach ($aAppLocations as $oModule) {
+dumpanddie($aAppLocations);
 
 //  Instantiate and run the application
 $app = new Application();

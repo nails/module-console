@@ -36,7 +36,8 @@
         "nails" :
         {
             "moduleName": "console",
-            "type": "module"
+            "type": "module",
+            "namespace": "Nails\\Console\\"
         }
     }
 }
