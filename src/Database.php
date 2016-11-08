@@ -16,21 +16,29 @@ class Database
      */
     const ERR_MSG_CONNECTION_FAILED = 'Connection failed.';
     const ERR_NUM_CONNECTION_FAILED = 1;
-    const ERR_MSG_NOT_CONNECTED     = 'Database is not connected';
-    const ERR_NUM_NOT_CONNECTED     = 2;
 
     // --------------------------------------------------------------------------
 
     /**
-     * Construct the class; setup and connect to the DB
-     * @param Object $dic The Pimple Container object
+     * Connect to the database
+     *
+     * @param  string $sHost     The database host
+     * @param  string $sUser     The database user
+     * @param  string $sPass     The database password
+     * @param  string $sDatabase The database
+     * @return void
      */
-    public function __construct()
+    public function connect($sHost = '', $sUser = '', $sPass = '', $sDatabase = '')
     {
-        $sHost = defined('DEPLOY_DB_HOST')     ? DEPLOY_DB_HOST     : '';
-        $sUser = defined('DEPLOY_DB_USERNAME') ? DEPLOY_DB_USERNAME : '';
-        $sPass = defined('DEPLOY_DB_PASSWORD') ? DEPLOY_DB_PASSWORD : '';
-        $sName = defined('DEPLOY_DB_DATABASE') ? DEPLOY_DB_DATABASE : '';
+        //  Close the connection if one is open
+        if (!is_null($this->oDb)) {
+            $this->oDb = null;
+        }
+
+        $sHost = !empty($sHost) ? $sHost : (defined('DEPLOY_DB_HOST') ? DEPLOY_DB_HOST : '');
+        $sUser = !empty($sUser) ? $sUser : (defined('DEPLOY_DB_USERNAME') ? DEPLOY_DB_USERNAME : '');
+        $sPass = !empty($sPass) ? $sPass : (defined('DEPLOY_DB_PASSWORD') ? DEPLOY_DB_PASSWORD : '');
+        $sName = !empty($sName) ? $sName : (defined('DEPLOY_DB_DATABASE') ? DEPLOY_DB_DATABASE : '');
 
         try {
 
@@ -39,7 +47,6 @@ class Database
             $this->oDb->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 
         } catch (\Exception $e) {
-
             throw new ConnectionException(self::ERR_MSG_CONNECTION_FAILED, self::ERR_NUM_CONNECTION_FAILED);
         }
     }
@@ -48,13 +55,14 @@ class Database
 
     /**
      * Execute a query
+     *
      * @param  string $sQuery The query to execute
      * @return PDOStatement
      */
     public function query($sQuery)
     {
         if (empty($this->oDb)) {
-            throw new ConnectionException(self::ERR_MSG_NOT_CONNECTED, self::ERR_NUM_NOT_CONNECTED);
+            $this->connect();
         }
 
         return $this->oDb->query($sQuery);
@@ -64,13 +72,14 @@ class Database
 
     /**
      * Prepares an SQL query
+     *
      * @param  string $sQuery The query to prepare
      * @return PDOStatement
      */
     public function prepare($sQuery)
     {
         if (empty($this->oDb)) {
-            throw new ConnectionException(self::ERR_MSG_NOT_CONNECTED, self::ERR_NUM_NOT_CONNECTED);
+            $this->connect();
         }
 
         return $this->oDb->prepare($sQuery);
@@ -80,12 +89,13 @@ class Database
 
     /**
      * Returns the ID created by the previous write query
+     *
      * @return string
      */
     public function lastInsertId()
     {
         if (empty($this->oDb)) {
-            throw new ConnectionException(self::ERR_MSG_NOT_CONNECTED, self::ERR_NUM_NOT_CONNECTED);
+            $this->connect();
         }
 
         return $this->oDb->lastInsertId();
@@ -95,6 +105,7 @@ class Database
 
     /**
      * Exposes the database API
+     *
      * @return PDO
      */
     public function db()
@@ -106,13 +117,14 @@ class Database
 
     /**
      * Escapes a string to make it query safe
+     *
      * @param  string $sString The string to escape
      * @return string
      */
     public function escape($sString)
     {
         if (empty($this->oDb)) {
-            throw new ConnectionException(self::ERR_MSG_NOT_CONNECTED, self::ERR_NUM_NOT_CONNECTED);
+            $this->connect();
         }
 
         return $this->oDb->quote($sString);
@@ -122,18 +134,20 @@ class Database
 
     /**
      * Starts a DB transaction
+     *
      * @return boolean
      */
     public function transactionStart()
     {
         if (empty($this->oDb)) {
-            throw new ConnectionException(self::ERR_MSG_NOT_CONNECTED, self::ERR_NUM_NOT_CONNECTED);
+            $this->connect();
         }
 
         try {
 
             $this->oDb->beginTransaction();
             $this->transactionRunning = true;
+
             return true;
 
         } catch (\Exception $e) {
@@ -145,18 +159,20 @@ class Database
 
     /**
      * Commits a DB transaction
+     *
      * @return boolean
      */
     public function transactionCommit()
     {
         if (empty($this->oDb)) {
-            throw new ConnectionException(self::ERR_MSG_NOT_CONNECTED, self::ERR_NUM_NOT_CONNECTED);
+            $this->connect();
         }
 
         try {
 
             $this->oDb->commit();
             $this->transactionRunning = false;
+
             return true;
 
         } catch (\Exception $e) {
@@ -168,18 +184,20 @@ class Database
 
     /**
      * Rollsback a DB transaction
+     *
      * @return boolean
      */
     public function transactionRollback()
     {
         if (empty($this->oDb)) {
-            throw new ConnectionException(self::ERR_MSG_NOT_CONNECTED, self::ERR_NUM_NOT_CONNECTED);
+            $this->connect();
         }
 
         try {
 
             $this->oDb->rollback();
             $this->transactionRunning = false;
+
             return true;
 
         } catch (\Exception $e) {
@@ -191,6 +209,7 @@ class Database
 
     /**
      * Returns whether a transaction is currently running
+     *
      * @return boolean
      */
     public function isTransactionRunning()

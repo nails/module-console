@@ -182,18 +182,25 @@ foreach ($aModules as $oModule) {
 Factory::helper('directory');
 $aApps = array();
 
-foreach ($aAppLocations as $aLocation) {
-
-    list($sPath, $sNamespace) = $aLocation;
-
+function findCommands(&$aApps, $sPath, $sNamespace)
+{
     $aDirMap = directory_map($sPath);
     if (!empty($aDirMap)) {
-        foreach ($aDirMap as $sFile) {
-            $aFileInfo = pathinfo($sFile);
-            $sFileName =  basename($sFile, '.' . $aFileInfo['extension']);
-            $aApps[]   = $sNamespace . '\\' . $sFileName;
+        foreach ($aDirMap as $sDir => $sFile) {
+            if (is_array($sFile)) {
+                findCommands($aApps, $sPath . DIRECTORY_SEPARATOR . $sDir, $sNamespace . '\\' . $sDir);
+            } else {
+                $aFileInfo = pathinfo($sFile);
+                $sFileName =  basename($sFile, '.' . $aFileInfo['extension']);
+                $aApps[]   = $sNamespace . '\\' . $sFileName;
+            }
         }
     }
+}
+
+foreach ($aAppLocations as $aLocation) {
+    list($sPath, $sNamespace) = $aLocation;
+    findCommands($aApps, $sPath, $sNamespace);
 }
 
 //  Instantiate and run the application
