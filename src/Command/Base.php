@@ -8,6 +8,11 @@ use Symfony\Component\Console\Command\Command;
 
 class Base extends Command
 {
+    const EXIT_CODE_SUCCESS = 0;
+    const EXIT_CODE_FAILURE = 1;
+
+    // --------------------------------------------------------------------------
+
     /**
      * Confirms something with the user
      * @param  string          $question The question to confirm
@@ -43,5 +48,47 @@ class Base extends Command
         $question = new Question($question . ' [' . $default . ']: ', $default) ;
 
         return $helper->ask($input, $output, $question);
+    }
+
+    // --------------------------------------------------------------------------
+
+    /**
+     * Performs the abort functionality and returns the exit code
+     *
+     * @param  OutputInterface $oOutput The Output Interface provided by Symfony
+     * @param  array $aMessages The error message
+     * @param  integer $iExitCode The exit code
+     * @return int
+     */
+    protected function abort($oOutput, $iExitCode = self::EXIT_CODE_FAILURE, $aMessages = [])
+    {
+        $aMessages   = (array) $aMessages;
+        if ($iExitCode === self::EXIT_CODE_FAILURE) {
+            $aMessages  = array_merge(['AN ERROR OCCURRED:', ''], $aMessages);
+            $iPadSize   = 2;
+            $iMaxLength = max(array_map('strlen', $aMessages)) + ($iPadSize * 2);
+        } else {
+            $iPadSize   = 0;
+            $iMaxLength = 0;
+        }
+
+        $sColorOpen  = $iExitCode === self::EXIT_CODE_FAILURE ? '<error>' : '';
+        $sColorClose = $iExitCode === self::EXIT_CODE_FAILURE ? '</error>' : '';
+
+        $oOutput->writeln('');
+        $oOutput->writeln($sColorOpen . str_repeat(' ', $iMaxLength) . $sColorClose);
+        foreach ($aMessages as $sLine) {
+            $oOutput->writeln(
+                $sColorOpen .
+                str_repeat(' ', $iPadSize) .
+                str_pad($sLine, $iMaxLength - ($iPadSize * 2)) .
+                str_repeat(' ', $iPadSize) .
+                $sColorClose
+            );
+        }
+        $oOutput->writeln($sColorOpen . str_repeat(' ', $iMaxLength) . $sColorClose);
+        $oOutput->writeln('');
+
+        return $iExitCode;
     }
 }
