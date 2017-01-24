@@ -2,9 +2,11 @@
 
 namespace Nails\Console\Command;
 
-use Symfony\Component\Console\Question\Question;
-use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
+use Symfony\Component\Console\Question\Question;
 
 class Base extends Command
 {
@@ -14,40 +16,65 @@ class Base extends Command
     // --------------------------------------------------------------------------
 
     /**
+     * @var \Symfony\Component\Console\Input\InputInterface
+     */
+    protected $oInput;
+
+    /**
+     * @var \Symfony\Component\Console\Output\OutputInterface
+     */
+    protected $oOutput;
+
+    // --------------------------------------------------------------------------
+
+    /**
+     * Executes the app
+     *
+     * @param  InputInterface $oInput The Input Interface provided by Symfony
+     * @param  OutputInterface $oOutput The Output Interface provided by Symfony
+     * @return void
+     */
+    protected function execute(InputInterface $oInput, OutputInterface $oOutput)
+    {
+        $this->oInput  = $oInput;
+        $this->oOutput = $oOutput;
+    }
+
+    // --------------------------------------------------------------------------
+
+    /**
      * Confirms something with the user
-     * @param  string          $question The question to confirm
-     * @param  boolean         $default  The default answer
-     * @param  InputInterface  $input    The Input Interface proivided by Symfony
-     * @param  OutputInterface $output   The Output Interface proivided by Symfony
+     *
+     * @param  string $sQuestion The question to confirm
+     * @param  boolean $bDefault The default answer
      * @return string
      */
-    protected function confirm($question, $default, $input, $output)
+    protected function confirm($sQuestion, $bDefault)
     {
-        $question      = is_array($question) ? implode("\n", $question) : $question;
-        $helper        = $this->getHelper('question');
-        $defaultString = $default ? 'Y' : 'N';
-        $question      = new ConfirmationQuestion($question . ' [' . $defaultString . ']: ', $default) ;
+        $sQuestion = is_array($sQuestion) ? implode("\n", $sQuestion) : $sQuestion;
+        $oHelper   = $this->getHelper('question');
+        $sDefault  = (bool) $bDefault ? 'Y' : 'N';
+        $sQuestion = new ConfirmationQuestion($sQuestion . ' [' . $sDefault . ']: ', $sDefault);
 
-        return $helper->ask($input, $output, $question);
+        return $oHelper->ask($this->oInput, $this->oOutput, $sQuestion);
     }
 
     // --------------------------------------------------------------------------
 
     /**
      * Asks the user for some input
-     * @param  string          $question The question to ask
-     * @param  mixed           $default  The default answer
-     * @param  InputInterface  $input    The Input Interface proivided by Symfony
-     * @param  OutputInterface $output   The Output Interface proivided by Symfony
+     *
+     * @param  string $mQuestion The question to ask
+     * @param  mixed $sDefault The default answer
      * @return string
      */
-    protected function ask($question, $default, $input, $output)
+    protected function ask($mQuestion, $sDefault)
     {
-        $question = is_array($question) ? implode("\n", $question) : $question;
-        $helper   = $this->getHelper('question');
-        $question = new Question($question . ' [' . $default . ']: ', $default) ;
+        $mQuestion = is_array($mQuestion) ? implode("\n", $mQuestion) : $mQuestion;
+        $helper    = $this->getHelper('question');
+        $oQuestion = new Question($mQuestion . ' [' . $sDefault . ']: ', $sDefault);
 
-        return $helper->ask($input, $output, $question);
+        return $helper->ask($this->oInput, $this->oOutput, $oQuestion);
     }
 
     // --------------------------------------------------------------------------
@@ -55,14 +82,13 @@ class Base extends Command
     /**
      * Performs the abort functionality and returns the exit code
      *
-     * @param  OutputInterface $oOutput The Output Interface provided by Symfony
      * @param  array $aMessages The error message
      * @param  integer $iExitCode The exit code
      * @return int
      */
-    protected function abort($oOutput, $iExitCode = self::EXIT_CODE_FAILURE, $aMessages = [])
+    protected function abort($iExitCode = self::EXIT_CODE_FAILURE, $aMessages = [])
     {
-        $aMessages   = (array) $aMessages;
+        $aMessages = (array) $aMessages;
         if ($iExitCode === self::EXIT_CODE_FAILURE) {
             $aMessages  = array_merge(['AN ERROR OCCURRED:', ''], $aMessages);
             $iPadSize   = 2;
@@ -75,10 +101,10 @@ class Base extends Command
         $sColorOpen  = $iExitCode === self::EXIT_CODE_FAILURE ? '<error>' : '';
         $sColorClose = $iExitCode === self::EXIT_CODE_FAILURE ? '</error>' : '';
 
-        $oOutput->writeln('');
-        $oOutput->writeln($sColorOpen . str_repeat(' ', $iMaxLength) . $sColorClose);
+        $this->oOutput->writeln('');
+        $this->oOutput->writeln($sColorOpen . str_repeat(' ', $iMaxLength) . $sColorClose);
         foreach ($aMessages as $sLine) {
-            $oOutput->writeln(
+            $this->oOutput->writeln(
                 $sColorOpen .
                 str_repeat(' ', $iPadSize) .
                 str_pad($sLine, $iMaxLength - ($iPadSize * 2)) .
@@ -86,8 +112,8 @@ class Base extends Command
                 $sColorClose
             );
         }
-        $oOutput->writeln($sColorOpen . str_repeat(' ', $iMaxLength) . $sColorClose);
-        $oOutput->writeln('');
+        $this->oOutput->writeln($sColorOpen . str_repeat(' ', $iMaxLength) . $sColorClose);
+        $this->oOutput->writeln('');
 
         return $iExitCode;
     }
