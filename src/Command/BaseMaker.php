@@ -2,8 +2,8 @@
 
 namespace Nails\Console\Command;
 
-use Nails\Console\Exception\Path\DoesNotExist;
-use Nails\Console\Exception\Path\IsNotWriteable;
+use Nails\Console\Exception\Path\DoesNotExistException;
+use Nails\Console\Exception\Path\IsNotWriteableException;
 use Nails\Environment;
 use Nails\Factory;
 use Symfony\Component\Console\Input\InputInterface;
@@ -89,18 +89,18 @@ class BaseMaker extends Base
      *
      * @param string $sPath The file to create
      * @param string $sContents The contents to write
-     * @throws DoesNotExist
-     * @throws IsNotWriteable
+     * @throws DoesNotExistException
+     * @throws IsNotWriteableException
      */
     protected function createFile($sPath, $sContents = '')
     {
         $hHandle = fopen($sPath, 'w');
         if (!$hHandle) {
-            throw new DoesNotExist('Failed to open ' . $sPath . ' for writing');
+            throw new DoesNotExistException('Failed to open ' . $sPath . ' for writing');
         }
 
         if (fwrite($hHandle, $sContents) === false) {
-            throw new IsNotWriteable('Failed to write to ' . $sPath);
+            throw new IsNotWriteableException('Failed to write to ' . $sPath);
         }
 
         fclose($hHandle);
@@ -112,19 +112,19 @@ class BaseMaker extends Base
      * Creates a new path
      *
      * @param string $sPath The path to create
-     * @throws DoesNotExist
-     * @throws IsNotWriteable
+     * @throws DoesNotExistException
+     * @throws IsNotWriteableException
      */
     protected function createPath($sPath)
     {
         if (!is_dir($sPath)) {
             if (!mkdir($sPath, self::FILE_PERMISSION, true)) {
-                throw new DoesNotExist('Path "' . $sPath . '" does not exist and could not be created');
+                throw new DoesNotExistException('Path "' . $sPath . '" does not exist and could not be created');
             }
         }
 
         if (!is_writable($sPath)) {
-            throw new IsNotWriteable('Path "' . $sPath . '" exists, but is not writeable');
+            throw new IsNotWriteableException('Path "' . $sPath . '" exists, but is not writeable');
         }
     }
 
