@@ -3,7 +3,9 @@
 namespace Nails\Console\Command;
 
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
@@ -54,9 +56,9 @@ class Base extends Command
         $sQuestion = is_array($sQuestion) ? implode("\n", $sQuestion) : $sQuestion;
         $oHelper   = $this->getHelper('question');
         $sDefault  = (bool) $bDefault ? 'Y' : 'N';
-        $sQuestion = new ConfirmationQuestion($sQuestion . ' [' . $sDefault . ']: ', $sDefault);
+        $oQuestion = new ConfirmationQuestion($sQuestion . ' [' . $sDefault . ']: ', $bDefault);
 
-        return $oHelper->ask($this->oInput, $this->oOutput, $sQuestion);
+        return $oHelper->ask($this->oInput, $this->oOutput, $oQuestion);
     }
 
     // --------------------------------------------------------------------------
@@ -71,10 +73,10 @@ class Base extends Command
     protected function ask($mQuestion, $sDefault)
     {
         $mQuestion = is_array($mQuestion) ? implode("\n", $mQuestion) : $mQuestion;
-        $helper    = $this->getHelper('question');
+        $oHelper   = $this->getHelper('question');
         $oQuestion = new Question($mQuestion . ' [' . $sDefault . ']: ', $sDefault);
 
-        return $helper->ask($this->oInput, $this->oOutput, $oQuestion);
+        return $oHelper->ask($this->oInput, $this->oOutput, $oQuestion);
     }
 
     // --------------------------------------------------------------------------
@@ -116,5 +118,33 @@ class Base extends Command
         $this->oOutput->writeln('');
 
         return $iExitCode;
+    }
+
+    // --------------------------------------------------------------------------
+
+    /**
+     * Call another command within the app
+     *
+     * @param string $sCommand The command to execute
+     * @param array $aArguments Any arguments to pass to the command
+     * @param bool $bInteractive Whether the command should be executed interactively
+     * @param bool $bSilent Whether the command should be executed silently
+     * @return int
+     */
+    protected function callCommand($sCommand, $aArguments = [], $bInteractive = true, $bSilent = false)
+    {
+        $oCmd       = $this->getApplication()->find($sCommand);
+        $aArguments = array_merge(['command' => $sCommand], $aArguments);
+        $oCmdInput  = new ArrayInput($aArguments);
+
+        $oCmdInput->setInteractive($bInteractive);
+
+        if ($bSilent) {
+            $oCmdOutput = new NullOutput();
+        } else {
+            $oCmdOutput = $this->oOutput;
+        }
+
+        return $oCmd->run($oCmdInput, $oCmdOutput);
     }
 }
