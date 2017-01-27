@@ -34,12 +34,13 @@ class Base extends Command
      *
      * @param  InputInterface $oInput The Input Interface provided by Symfony
      * @param  OutputInterface $oOutput The Output Interface provided by Symfony
-     * @return void
+     * @return int
      */
     protected function execute(InputInterface $oInput, OutputInterface $oOutput)
     {
         $this->oInput  = $oInput;
         $this->oOutput = $oOutput;
+        return static::EXIT_CODE_SUCCESS;
     }
 
     // --------------------------------------------------------------------------
