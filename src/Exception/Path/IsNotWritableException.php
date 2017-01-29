@@ -14,6 +14,6 @@ namespace Nails\Console\Exception\Path;
 
 use Nails\Common\Exception\NailsException;
 
-class IsNotWriteableException extends NailsException
+class IsNotWritableException extends NailsException
 {
 }

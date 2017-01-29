@@ -3,7 +3,7 @@
 namespace Nails\Console\Command;
 
 use Nails\Console\Exception\Path\DoesNotExistException;
-use Nails\Console\Exception\Path\IsNotWriteableException;
+use Nails\Console\Exception\Path\IsNotWritableException;
 use Nails\Environment;
 use Nails\Factory;
 use Symfony\Component\Console\Input\InputInterface;
@@ -90,7 +90,7 @@ class BaseMaker extends Base
      * @param string $sPath The file to create
      * @param string $sContents The contents to write
      * @throws DoesNotExistException
-     * @throws IsNotWriteableException
+     * @throws IsNotWritableException
      */
     protected function createFile($sPath, $sContents = '')
     {
@@ -100,7 +100,7 @@ class BaseMaker extends Base
         }
 
         if (fwrite($hHandle, $sContents) === false) {
-            throw new IsNotWriteableException('Failed to write to ' . $sPath);
+            throw new IsNotWritableException('Failed to write to ' . $sPath);
         }
 
         fclose($hHandle);
@@ -113,7 +113,7 @@ class BaseMaker extends Base
      *
      * @param string $sPath The path to create
      * @throws DoesNotExistException
-     * @throws IsNotWriteableException
+     * @throws IsNotWritableException
      */
     protected function createPath($sPath)
     {
@@ -124,7 +124,7 @@ class BaseMaker extends Base
         }
 
         if (!is_writable($sPath)) {
-            throw new IsNotWriteableException('Path "' . $sPath . '" exists, but is not writeable');
+            throw new IsNotWritableException('Path "' . $sPath . '" exists, but is not writable');
         }
     }
 

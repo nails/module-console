@@ -1,12 +1,31 @@
 <?php
 
+/**
+ * This class abstracts the generic PDO library, for use by console applications
+ *
+ * Class Database
+ * @package Nails\Console
+ */
+
 namespace Nails\Console;
 
 use Nails\Common\Exception\Database\ConnectionException;
+use Nails\Common\Exception\Database\TransactionException;
 
 class Database
 {
+    /**
+     * The PDO handler
+     *
+     * @var \PDO
+     */
     protected $oDb;
+
+    /**
+     * Whether a transaction is currently running or not
+     *
+     * @var bool
+     */
     protected $transactionRunning = false;
 
     // --------------------------------------------------------------------------
@@ -22,27 +41,30 @@ class Database
     /**
      * Connect to the database
      *
-     * @param  string $sHost     The database host
-     * @param  string $sUser     The database user
-     * @param  string $sPass     The database password
-     * @param  string $sDatabase The database
+     * @param  string $sDbHost The database host
+     * @param  string $sDbUser The database user
+     * @param  string $sDbPass The database password
+     * @param  string $sDbName The database
      * @return void
+     * @throws ConnectionException
      */
-    public function connect($sHost = '', $sUser = '', $sPass = '', $sDatabase = '')
+    public function connect($sDbHost = '', $sDbUser = '', $sDbPass = '', $sDbName = '')
     {
         //  Close the connection if one is open
         if (!is_null($this->oDb)) {
             $this->oDb = null;
         }
 
-        $sHost = !empty($sHost) ? $sHost : (defined('DEPLOY_DB_HOST') ? DEPLOY_DB_HOST : '');
-        $sUser = !empty($sUser) ? $sUser : (defined('DEPLOY_DB_USERNAME') ? DEPLOY_DB_USERNAME : '');
-        $sPass = !empty($sPass) ? $sPass : (defined('DEPLOY_DB_PASSWORD') ? DEPLOY_DB_PASSWORD : '');
-        $sName = !empty($sName) ? $sName : (defined('DEPLOY_DB_DATABASE') ? DEPLOY_DB_DATABASE : '');
+        $sDbHost = !empty($sDbHost) ? $sDbHost : (defined('DEPLOY_DB_HOST') ? DEPLOY_DB_HOST : '');
+        $sDbUser = !empty($sDbUser) ? $sDbUser : (defined('DEPLOY_DB_USERNAME') ? DEPLOY_DB_USERNAME : '');
+        $sDbPass = !empty($sDbPass) ? $sDbPass : (defined('DEPLOY_DB_PASSWORD') ? DEPLOY_DB_PASSWORD : '');
+        $sDbName = !empty($sDbName) ? $sDbName : (defined('DEPLOY_DB_DATABASE') ? DEPLOY_DB_DATABASE : '');
 
         try {
 
-            $this->oDb = new \PDO('mysql:host=' . $sHost . ';dbname=' . $sName . ';charset=utf8', $sUser, $sPass);
+            $this->oDb = new \PDO(
+                'mysql:host=' . $sDbHost . ';dbname=' . $sDbName . ';charset=utf8', $sDbUser, $sDbPass
+            );
             $this->oDb->exec('set names utf8');
             $this->oDb->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 
@@ -57,7 +79,7 @@ class Database
      * Execute a query
      *
      * @param  string $sQuery The query to execute
-     * @return PDOStatement
+     * @return \PDOStatement
      */
     public function query($sQuery)
     {
@@ -74,7 +96,7 @@ class Database
      * Prepares an SQL query
      *
      * @param  string $sQuery The query to prepare
-     * @return PDOStatement
+     * @return \PDOStatement
      */
     public function prepare($sQuery)
     {
@@ -106,7 +128,7 @@ class Database
     /**
      * Exposes the database API
      *
-     * @return PDO
+     * @return \PDO
      */
     public function db()
     {
@@ -136,6 +158,7 @@ class Database
      * Starts a DB transaction
      *
      * @return boolean
+     * @throws TransactionException
      */
     public function transactionStart()
     {
@@ -161,6 +184,7 @@ class Database
      * Commits a DB transaction
      *
      * @return boolean
+     * @throws TransactionException
      */
     public function transactionCommit()
     {
@@ -186,6 +210,7 @@ class Database
      * Rollsback a DB transaction
      *
      * @return boolean
+     * @throws TransactionException
      */
     public function transactionRollback()
     {
