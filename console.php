@@ -53,7 +53,7 @@ if (defined('STDIN')) {
 
 define('SELF', pathinfo(__FILE__, PATHINFO_BASENAME));
 
-$system_path = 'vendor/rogeriopradoj/codeigniter/system';
+$system_path = 'vendor/codeigniter/framework/system';
 if (realpath($system_path) !== false) {
     $system_path = realpath($system_path) . '/';
 }
