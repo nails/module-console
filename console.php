@@ -188,7 +188,7 @@ function findCommands(&$aApps, $sPath, $sNamespace)
     if (!empty($aDirMap)) {
         foreach ($aDirMap as $sDir => $sFile) {
             if (is_array($sFile)) {
-                findCommands($aApps, $sPath . DIRECTORY_SEPARATOR . $sDir, $sNamespace . '\\' . $sDir);
+                findCommands($aApps, $sPath . DIRECTORY_SEPARATOR . $sDir, $sNamespace . '\\' . trim( $sDir, '/' ) );
             } else {
                 $aFileInfo = pathinfo($sFile);
                 $sFileName =  basename($sFile, '.' . $aFileInfo['extension']);
