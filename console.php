@@ -134,8 +134,6 @@ require_once NAILS_COMMON_PATH . 'core/CORE_NAILS_Common.php';
 require_once NAILS_COMMON_PATH . 'src/Startup.php';
 $oStartup = new Startup();
 $oStartup->init();
-Factory::setup();
-Factory::autoload();
 
 //  Set to run indefinitely
 set_time_limit(0);
