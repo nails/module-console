@@ -134,7 +134,6 @@ require_once NAILS_COMMON_PATH . 'core/CORE_NAILS_Common.php';
 require_once NAILS_COMMON_PATH . 'src/Startup.php';
 $oStartup = new Startup();
 $oStartup->init();
-Factory::setup();
 
 //  Set to run indefinitely
 set_time_limit(0);
@@ -150,17 +149,6 @@ if (!isCli()) {
 
 //  Setup error handling
 Factory::service('ErrorHandler');
-
-//  Autoload the things
-Factory::helper('app_setting');
-Factory::helper('app_notification');
-Factory::helper('date');
-Factory::helper('tools');
-Factory::helper('debug');
-Factory::helper('language');
-Factory::helper('text');
-Factory::helper('exception');
-Factory::helper('log');
 
 // --------------------------------------------------------------------------
 
