@@ -138,7 +138,7 @@ if (!defined('NAILS_COMMON_PATH')) {
 /**
  * Setup the basic system
  */
-require_once NAILS_COMMON_PATH . 'src/Common/CodeIgniter/Common.php';
+require_once NAILS_COMMON_PATH . 'src/Common/CodeIgniter/Core/Common.php';
 require_once NAILS_COMMON_PATH . 'src/Startup.php';
 $oStartup = new Startup();
 $oStartup->init();
