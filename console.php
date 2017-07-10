@@ -15,8 +15,8 @@
 
 namespace Nails\Common\Console;
 
-use Nails\Startup;
 use Nails\Factory;
+use Nails\Startup;
 use Symfony\Component\Console\Application;
 
 // --------------------------------------------------------------------------
@@ -40,6 +40,14 @@ if (!function_exists('_NAILS_ERROR')) {
         exit(0);
     }
 }
+
+// --------------------------------------------------------------------------
+
+if (!file_exists(dirname(__FILE__) . '/../../autoload.php')) {
+    _NAILS_ERROR('Missing vendor/autoload.php; please run composer install.');
+}
+
+require_once dirname(__FILE__) . '/../../autoload.php';
 
 // --------------------------------------------------------------------------
 // --------------------------------------------------------------------------
@@ -74,13 +82,13 @@ define('APPPATH', 'application/');
 if (FCPATH . 'vendor/nailsapp/module-console/console.php' !== __FILE__) {
     _NAILS_ERROR(
         'console.php does not reside where it is expected (in the app\'s vendor/nailsapp folder). ' .
-        'This might be because you have symlinked the vendor/nailsapp directory (useful when developing) '.
+        'This might be because you have symlinked the vendor/nailsapp directory (useful when developing) ' .
         'This however causes loading errors and must be rectified.',
         'Invalid location of console.php'
     );
 }
 
-//  Set the working directory so that requires etc work as they do in the mian application
+//  Set the working directory so that requires etc work as they do in the main application
 chdir(FCPATH);
 
 /*
@@ -130,10 +138,11 @@ if (!defined('NAILS_COMMON_PATH')) {
 /**
  * Setup the basic system
  */
-require_once NAILS_COMMON_PATH . 'core/CORE_NAILS_Common.php';
+require_once NAILS_COMMON_PATH . 'src/Common/CodeIgniter/Core/Common.php';
 require_once NAILS_COMMON_PATH . 'src/Startup.php';
 $oStartup = new Startup();
 $oStartup->init();
+Factory::setup();
 
 //  Set to run indefinitely
 set_time_limit(0);
@@ -150,25 +159,36 @@ if (!isCli()) {
 //  Setup error handling
 Factory::service('ErrorHandler');
 
+//  Autoload the things
+Factory::helper('app_setting');
+Factory::helper('app_notification');
+Factory::helper('date');
+Factory::helper('tools');
+Factory::helper('debug');
+Factory::helper('language');
+Factory::helper('text');
+Factory::helper('exception');
+Factory::helper('log');
+
 // --------------------------------------------------------------------------
 
 //  Set Common and App locations
-$aAppLocations = array(
-    array(FCPATH . 'vendor/nailsapp/common/src/Common/Console/Command/', 'Nails\Common\Console\Command'),
-    array(FCPATH . 'src/Console/Command/', 'App\Console\Command')
-);
+$aAppLocations = [
+    [FCPATH . 'vendor/nailsapp/common/src/Common/Console/Command/', 'Nails\Common\Console\Command'],
+    [FCPATH . 'src/Console/Command/', 'App\Console\Command'],
+];
 
 //  Look for apps provided by the modules
 $aModules = _NAILS_GET_MODULES();
 foreach ($aModules as $oModule) {
-    $aAppLocations[] = array(
+    $aAppLocations[] = [
         $oModule->path . 'src/Console/Command',
-        $oModule->namespace . 'Console\Command'
-    );
+        $oModule->namespace . 'Console\Command',
+    ];
 }
 
 Factory::helper('directory');
-$aApps = array();
+$aApps = [];
 
 function findCommands(&$aApps, $sPath, $sNamespace)
 {
@@ -176,10 +196,10 @@ function findCommands(&$aApps, $sPath, $sNamespace)
     if (!empty($aDirMap)) {
         foreach ($aDirMap as $sDir => $sFile) {
             if (is_array($sFile)) {
-                findCommands($aApps, $sPath . DIRECTORY_SEPARATOR . $sDir, $sNamespace . '\\' . trim( $sDir, '/' ) );
+                findCommands($aApps, $sPath . DIRECTORY_SEPARATOR . $sDir, $sNamespace . '\\' . trim($sDir, '/'));
             } else {
                 $aFileInfo = pathinfo($sFile);
-                $sFileName =  basename($sFile, '.' . $aFileInfo['extension']);
+                $sFileName = basename($sFile, '.' . $aFileInfo['extension']);
                 $aApps[]   = $sNamespace . '\\' . $sFileName;
             }
         }
