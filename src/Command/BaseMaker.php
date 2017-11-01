@@ -178,7 +178,7 @@ class BaseMaker extends Base
                 ];
             }
         }
-        unset($aArgument);
+
         unset($sField);
         unset($sValue);
 
@@ -198,7 +198,14 @@ class BaseMaker extends Base
                 } while ($bAskAgain);
             }
         }
+        unset($aArgument);
 
-        return $aArguments;
+        //  Finally set as key values
+        $aOut = [];
+        foreach ($aArguments as $aArgument) {
+            $aOut[strtoupper($aArgument->name)] = $aArgument->value;
+        }
+
+        return $aOut;
     }
 }
