@@ -171,7 +171,7 @@ class BaseMaker extends Base
             $aArgumentsRaw = array_slice($this->oInput->getArguments(), 1);
             foreach ($aArgumentsRaw as $sField => $sValue) {
                 $sField       = strtoupper(camelcase_to_underscore($sField));
-                $aArguments[] = [
+                $aArguments[] = (object) [
                     'name'     => $sField,
                     'value'    => $sValue,
                     'required' => true,
@@ -182,15 +182,15 @@ class BaseMaker extends Base
         unset($sField);
         unset($sValue);
 
-        foreach ($aArguments as &$aArgument) {
-            if (empty($aArgument->value)) {
-                $sLabel = str_replace('_', ' ', $aArgument->name);
+        foreach ($aArguments as &$oArgument) {
+            if (empty($oArgument->value)) {
+                $sLabel = str_replace('_', ' ', $oArgument->name);
                 $sLabel = ucwords(strtolower($sLabel));
                 $sError = '';
                 do {
-                    $aArgument->value = $this->ask($sError . $sLabel . ':', '');
+                    $oArgument->value = $this->ask($sError . $sLabel . ':', '');
                     $sError = '<error>Please specify</error> ';
-                    if ($aArgument->required && empty($aArgument->value)) {
+                    if ($oArgument->required && empty($oArgument->value)) {
                         $bAskAgain = true;
                     } else {
                         $bAskAgain = false;
@@ -198,12 +198,12 @@ class BaseMaker extends Base
                 } while ($bAskAgain);
             }
         }
-        unset($aArgument);
+        unset($oArgument);
 
         //  Finally set as key values
         $aOut = [];
-        foreach ($aArguments as $aArgument) {
-            $aOut[strtoupper($aArgument->name)] = $aArgument->value;
+        foreach ($aArguments as $oArgument) {
+            $aOut[strtoupper($oArgument->name)] = $oArgument->value;
         }
 
         return $aOut;
