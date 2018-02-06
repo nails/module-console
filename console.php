@@ -15,6 +15,7 @@
 
 namespace Nails\Common\Console;
 
+use Nails\Common\Library\Input;
 use Nails\Startup;
 use Nails\Factory;
 use Symfony\Component\Console\Application;
@@ -142,7 +143,7 @@ set_time_limit(0);
 date_default_timezone_set('UTC');
 
 //  Only allow the console to run whilst on the CLI
-if (!isCli()) {
+if (!Input::isCli()) {
     echo 'This tool can only be used on the command line.';
     exit(1);
 }
