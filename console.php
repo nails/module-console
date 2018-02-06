@@ -15,9 +15,8 @@
 
 namespace Nails\Common\Console;
 
-use Nails\Common\Library\Input;
-use Nails\Startup;
 use Nails\Factory;
+use Nails\Startup;
 use Symfony\Component\Console\Application;
 
 // --------------------------------------------------------------------------
@@ -75,7 +74,7 @@ define('APPPATH', 'application/');
 if (FCPATH . 'vendor/nailsapp/module-console/console.php' !== __FILE__) {
     _NAILS_ERROR(
         'console.php does not reside where it is expected (in the app\'s vendor/nailsapp folder). ' .
-        'This might be because you have symlinked the vendor/nailsapp directory (useful when developing) '.
+        'This might be because you have symlinked the vendor/nailsapp directory (useful when developing) ' .
         'This however causes loading errors and must be rectified.',
         'Invalid location of console.php'
     );
@@ -143,7 +142,8 @@ set_time_limit(0);
 date_default_timezone_set('UTC');
 
 //  Only allow the console to run whilst on the CLI
-if (!Input::isCli()) {
+$oInput = Factory::service('Input');
+if (!$oInput::isCli()) {
     echo 'This tool can only be used on the command line.';
     exit(1);
 }
@@ -154,22 +154,22 @@ Factory::service('ErrorHandler');
 // --------------------------------------------------------------------------
 
 //  Set Common and App locations
-$aAppLocations = array(
-    array(FCPATH . 'vendor/nailsapp/common/src/Common/Console/Command/', 'Nails\Common\Console\Command'),
-    array(FCPATH . 'src/Console/Command/', 'App\Console\Command')
-);
+$aAppLocations = [
+    [FCPATH . 'vendor/nailsapp/common/src/Common/Console/Command/', 'Nails\Common\Console\Command'],
+    [FCPATH . 'src/Console/Command/', 'App\Console\Command'],
+];
 
 //  Look for apps provided by the modules
 $aModules = _NAILS_GET_MODULES();
 foreach ($aModules as $oModule) {
-    $aAppLocations[] = array(
+    $aAppLocations[] = [
         $oModule->path . 'src/Console/Command',
-        $oModule->namespace . 'Console\Command'
-    );
+        $oModule->namespace . 'Console\Command',
+    ];
 }
 
 Factory::helper('directory');
-$aApps = array();
+$aApps = [];
 
 function findCommands(&$aApps, $sPath, $sNamespace)
 {
@@ -180,7 +180,7 @@ function findCommands(&$aApps, $sPath, $sNamespace)
                 findCommands($aApps, $sPath . DIRECTORY_SEPARATOR . $sDir, $sNamespace . '\\' . $sDir);
             } else {
                 $aFileInfo = pathinfo($sFile);
-                $sFileName =  basename($sFile, '.' . $aFileInfo['extension']);
+                $sFileName = basename($sFile, '.' . $aFileInfo['extension']);
                 $aApps[]   = $sNamespace . '\\' . $sFileName;
             }
         }
