@@ -151,7 +151,8 @@ set_time_limit(0);
 date_default_timezone_set('UTC');
 
 //  Only allow the console to run whilst on the CLI
-if (!isCli()) {
+$oInput = Factory::service('Input');
+if (!$oInput::isCli()) {
     echo 'This tool can only be used on the command line.';
     exit(1);
 }
