@@ -42,6 +42,14 @@ if (!function_exists('_NAILS_ERROR')) {
 }
 
 // --------------------------------------------------------------------------
+
+if (!file_exists(dirname(__FILE__) . '/../../autoload.php')) {
+    _NAILS_ERROR('Missing vendor/autoload.php; please run composer install.');
+}
+
+require_once dirname(__FILE__) . '/../../autoload.php';
+
+// --------------------------------------------------------------------------
 // --------------------------------------------------------------------------
 //  Below copied from CodeIgniter's index.php
 //  Various code rely heavily on these constants
@@ -53,7 +61,7 @@ if (defined('STDIN')) {
 
 define('SELF', pathinfo(__FILE__, PATHINFO_BASENAME));
 
-$system_path = 'vendor/rogeriopradoj/codeigniter/system';
+$system_path = 'vendor/codeigniter/framework/system';
 if (realpath($system_path) !== false) {
     $system_path = realpath($system_path) . '/';
 }
@@ -80,7 +88,7 @@ if (FCPATH . 'vendor/nailsapp/module-console/console.php' !== __FILE__) {
     );
 }
 
-//  Set the working directory so that requires etc work as they do in the mian application
+//  Set the working directory so that requires etc work as they do in the main application
 chdir(FCPATH);
 
 /*
@@ -130,10 +138,11 @@ if (!defined('NAILS_COMMON_PATH')) {
 /**
  * Setup the basic system
  */
-require_once NAILS_COMMON_PATH . 'core/CORE_NAILS_Common.php';
+require_once NAILS_COMMON_PATH . 'src/Common/CodeIgniter/Core/Common.php';
 require_once NAILS_COMMON_PATH . 'src/Startup.php';
 $oStartup = new Startup();
 $oStartup->init();
+Factory::setup();
 
 //  Set to run indefinitely
 set_time_limit(0);
@@ -150,6 +159,17 @@ if (!$oInput::isCli()) {
 
 //  Setup error handling
 Factory::service('ErrorHandler');
+
+//  Autoload the things
+Factory::helper('app_setting');
+Factory::helper('app_notification');
+Factory::helper('date');
+Factory::helper('tools');
+Factory::helper('debug');
+Factory::helper('language');
+Factory::helper('text');
+Factory::helper('exception');
+Factory::helper('log');
 
 // --------------------------------------------------------------------------
 
@@ -177,7 +197,7 @@ function findCommands(&$aApps, $sPath, $sNamespace)
     if (!empty($aDirMap)) {
         foreach ($aDirMap as $sDir => $sFile) {
             if (is_array($sFile)) {
-                findCommands($aApps, $sPath . DIRECTORY_SEPARATOR . $sDir, $sNamespace . '\\' . $sDir);
+                findCommands($aApps, $sPath . DIRECTORY_SEPARATOR . $sDir, $sNamespace . '\\' . trim($sDir, '/'));
             } else {
                 $aFileInfo = pathinfo($sFile);
                 $sFileName = basename($sFile, '.' . $aFileInfo['extension']);

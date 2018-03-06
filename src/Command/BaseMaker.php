@@ -62,6 +62,11 @@ class BaseMaker extends Base
 
         // --------------------------------------------------------------------------
 
+        //  Setup Factory - config files are required prior to set up
+        Factory::setup();
+
+        // --------------------------------------------------------------------------
+
         //  Check environment
         if (Environment::not('DEVELOPMENT')) {
             return $this->abort(
