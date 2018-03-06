@@ -42,14 +42,6 @@ if (!function_exists('_NAILS_ERROR')) {
 }
 
 // --------------------------------------------------------------------------
-
-if (!file_exists(dirname(__FILE__) . '/../../autoload.php')) {
-    _NAILS_ERROR('Missing vendor/autoload.php; please run composer install.');
-}
-
-require_once dirname(__FILE__) . '/../../autoload.php';
-
-// --------------------------------------------------------------------------
 // --------------------------------------------------------------------------
 //  Below copied from CodeIgniter's index.php
 //  Various code rely heavily on these constants
@@ -68,25 +60,20 @@ if (realpath($system_path) !== false) {
 $system_path = rtrim($system_path, '/') . '/';
 define('BASEPATH', str_replace("\\", "/", $system_path));
 
-define('FCPATH', realpath(str_replace(SELF, '', __FILE__) . '../../../') . '/');
+define('FCPATH', $_SERVER['PWD'] . '/');
 
-define('APPPATH', 'application/');
+define('APPPATH', FCPATH . 'application/');
 
 // --------------------------------------------------------------------------
 //  Above copied from CodeIgniter's index.php
 // --------------------------------------------------------------------------
 // --------------------------------------------------------------------------
 
-//  Detect if FCPATH resolves to the same location as this file, if it doesn't then
-//  Nails is probably being run as a symlink and must be halted.
-if (FCPATH . 'vendor/nailsapp/module-console/console.php' !== __FILE__) {
-    _NAILS_ERROR(
-        'console.php does not reside where it is expected (in the app\'s vendor/nailsapp folder). ' .
-        'This might be because you have symlinked the vendor/nailsapp directory (useful when developing) ' .
-        'This however causes loading errors and must be rectified.',
-        'Invalid location of console.php'
-    );
+if (!file_exists(FCPATH . 'vendor/autoload.php')) {
+    _NAILS_ERROR('Missing vendor/autoload.php; please run composer install.');
 }
+
+require_once FCPATH . 'vendor/autoload.php';
 
 //  Set the working directory so that requires etc work as they do in the main application
 chdir(FCPATH);
