@@ -127,7 +127,6 @@ if (!defined('NAILS_COMMON_PATH')) {
  */
 require_once NAILS_COMMON_PATH . 'src/Common/CodeIgniter/Core/Common.php';
 require_once NAILS_COMMON_PATH . 'src/Startup.php';
-require_once FCPATH . 'vendor/nailsapp/module-console/src/MockCi.php';
 
 $oStartup = new Startup();
 $oStartup->init();
