@@ -131,8 +131,8 @@ require_once NAILS_COMMON_PATH . 'src/Common/CodeIgniter/Core/Common.php';
 require_once NAILS_COMMON_PATH . 'src/Startup.php';
 
 $oStartup = new Startup();
-$oUtf8    = new Utf8();
 $oStartup->init();
+$oUtf8 = new Utf8();
 Factory::setup();
 
 //  Set to run indefinitely
@@ -192,7 +192,7 @@ function findCommands(&$aApps, $sPath, $sNamespace)
             } else {
                 $aFileInfo = pathinfo($sFile);
                 $sFileName = basename($sFile, '.' . $aFileInfo['extension']);
-                $aApps[]   = $sNamespace . '\\' . $sFileName;
+                $aApps[] = $sNamespace . '\\' . $sFileName;
             }
         }
     }
