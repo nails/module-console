@@ -22,7 +22,7 @@
     "require":
     {
         "nailsapp/common": "dev-develop",
-        "symfony/console": "4.*"
+        "symfony/console": "3.*"
     },
     "require-dev":
     {
