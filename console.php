@@ -107,7 +107,7 @@ if (file_exists(FCPATH . 'config/deploy.php')) {
 
 /*
  *---------------------------------------------------------------
- * BOOTSTRAPPER: PRE-SYSTEM
+ * App Bootstrapper: preSystem
  *---------------------------------------------------------------
  *
  * Allows the app to execute code very early on in the console tool lifecycle
@@ -174,56 +174,77 @@ Factory::helper('text');
 Factory::helper('exception');
 Factory::helper('log');
 
-// --------------------------------------------------------------------------
+/*
+ *---------------------------------------------------------------
+ * Command Locations
+ *---------------------------------------------------------------
+ *
+ * Define which directories to look in for Console Commands
+ *
+ */
 
-//  Set Common and App locations
-$aAppLocations = [
+$aCommandLocations = [
     [FCPATH . 'vendor/nailsapp/common/src/Common/Console/Command/', 'Nails\Common\Console\Command'],
     [FCPATH . 'src/Console/Command/', 'App\Console\Command'],
 ];
 
-//  Look for apps provided by the modules
 $aModules = _NAILS_GET_MODULES();
 foreach ($aModules as $oModule) {
-    $aAppLocations[] = [
+    $aCommandLocations[] = [
         $oModule->path . 'src/Console/Command',
         $oModule->namespace . 'Console\Command',
     ];
 }
 
-Factory::helper('directory');
-$aApps = [];
+/*
+ *---------------------------------------------------------------
+ * Load Commands
+ *---------------------------------------------------------------
+ *
+ * Recursively look for commands
+ *
+ */
 
-function findCommands(&$aApps, $sPath, $sNamespace)
+Factory::helper('directory');
+$aCommands = [];
+
+function findCommands(&$aCommands, $sPath, $sNamespace)
 {
     $aDirMap = directory_map($sPath);
     if (!empty($aDirMap)) {
         foreach ($aDirMap as $sDir => $sFile) {
             if (is_array($sFile)) {
-                findCommands($aApps, $sPath . DIRECTORY_SEPARATOR . $sDir, $sNamespace . '\\' . trim($sDir, '/'));
+                findCommands($aCommands, $sPath . DIRECTORY_SEPARATOR . $sDir, $sNamespace . '\\' . trim($sDir, '/'));
             } else {
-                $aFileInfo = pathinfo($sFile);
-                $sFileName = basename($sFile, '.' . $aFileInfo['extension']);
-                $aApps[]   = $sNamespace . '\\' . $sFileName;
+                $aFileInfo   = pathinfo($sFile);
+                $sFileName   = basename($sFile, '.' . $aFileInfo['extension']);
+                $aCommands[] = $sNamespace . '\\' . $sFileName;
             }
         }
     }
 }
 
-foreach ($aAppLocations as $aLocation) {
+foreach ($aCommandLocations as $aLocation) {
     list($sPath, $sNamespace) = $aLocation;
-    findCommands($aApps, $sPath, $sNamespace);
-}
-
-//  Instantiate and run the application
-$app = new Application();
-foreach ($aApps as $sClass) {
-    $app->add(new $sClass());
+    findCommands($aCommands, $sPath, $sNamespace);
 }
 
 /*
  *---------------------------------------------------------------
- * BOOTSTRAPPER: PRE-COMMAND
+ * Instanciate the application
+ *---------------------------------------------------------------
+ *
+ * Instanciate the application and add commands
+ *
+ */
+$oApp = new Application();
+foreach ($aCommands as $sCommandClass) {
+    $oApp->add(new $sCommandClass());
+}
+
+/*
+ *---------------------------------------------------------------
+ * App Bootstrapper: preCommand
  *---------------------------------------------------------------
  *
  * Allows the app to execute code just before the command is called
@@ -233,11 +254,20 @@ if (class_exists('App\Console\Bootstrap') && is_callable('\App\Console\Bootstrap
     \App\Console\Bootstrap::preCommand();
 }
 
-$app->run();
+/*
+ *---------------------------------------------------------------
+ * Run the application
+ *---------------------------------------------------------------
+ *
+ * Go, go, go!
+ *
+ */
+
+$oApp->run();
 
 /*
  *---------------------------------------------------------------
- * BOOTSTRAPPER: POST-COMMAND
+ * App Bootstrapper: postCommand
  *---------------------------------------------------------------
  *
  * Allows the app to execute code just before the command is called
