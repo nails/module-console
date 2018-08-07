@@ -107,6 +107,18 @@ if (file_exists(FCPATH . 'config/deploy.php')) {
 
 /*
  *---------------------------------------------------------------
+ * BOOTSTRAPPER: PRE-SYSTEM
+ *---------------------------------------------------------------
+ *
+ * Allows the app to execute code very early on in the console tool lifecycle
+ *
+ */
+if (class_exists('App\Console\Bootstrap') && is_callable('\App\Console\Bootstrap::preSystem')) {
+    \App\Console\Bootstrap::preSystem();
+}
+
+/*
+ *---------------------------------------------------------------
  * GLOBAL CONSTANTS
  *---------------------------------------------------------------
  *
@@ -150,11 +162,6 @@ if (!$oInput::isCli()) {
 
 //  Setup error handling
 Factory::service('ErrorHandler');
-
-//  Run the app startup hook
-if (class_exists('App\Console\Startup')) {
-    \App\Console\Startup::bootstrap();
-}
 
 //  Autoload the things
 Factory::helper('app_setting');
@@ -213,4 +220,29 @@ $app = new Application();
 foreach ($aApps as $sClass) {
     $app->add(new $sClass());
 }
+
+/*
+ *---------------------------------------------------------------
+ * BOOTSTRAPPER: PRE-COMMAND
+ *---------------------------------------------------------------
+ *
+ * Allows the app to execute code just before the command is called
+ *
+ */
+if (class_exists('App\Console\Bootstrap') && is_callable('\App\Console\Bootstrap::preCommand')) {
+    \App\Console\Bootstrap::preCommand();
+}
+
 $app->run();
+
+/*
+ *---------------------------------------------------------------
+ * BOOTSTRAPPER: POST-COMMAND
+ *---------------------------------------------------------------
+ *
+ * Allows the app to execute code just before the command is called
+ *
+ */
+if (class_exists('App\Console\Bootstrap') && is_callable('\App\Console\Bootstrap::postCommand')) {
+    \App\Console\Bootstrap::postCommand();
+}
