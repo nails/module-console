@@ -151,6 +151,11 @@ if (!$oInput::isCli()) {
 //  Setup error handling
 Factory::service('ErrorHandler');
 
+//  Run the app startup hook
+if (class_exists('App\Console\Startup')) {
+    \App\Console\Startup::bootstrap();
+}
+
 //  Autoload the things
 Factory::helper('app_setting');
 Factory::helper('app_notification');
@@ -192,7 +197,7 @@ function findCommands(&$aApps, $sPath, $sNamespace)
             } else {
                 $aFileInfo = pathinfo($sFile);
                 $sFileName = basename($sFile, '.' . $aFileInfo['extension']);
-                $aApps[] = $sNamespace . '\\' . $sFileName;
+                $aApps[]   = $sNamespace . '\\' . $sFileName;
             }
         }
     }
