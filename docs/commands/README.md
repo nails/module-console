@@ -8,12 +8,16 @@ Each command is simply a Symfony Command, and [should adopt the same structure](
 
 ```php
 namespace App\Console\Command;
+
+use Nails\Console\Command\Base;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
     
-class Bark
+class Bark extends Base
 {
     protected function configure()
     {
-        $this->setName('bark');
+        $this->setName('app:bark');
         $this->setDescription('Barks like a dog');
     }
 
