@@ -184,7 +184,7 @@ Factory::helper('log');
  */
 
 $aCommandLocations = [
-    [FCPATH . 'vendor/nailsapp/common/src/Common/Console/Command/', 'Nails\Common\Console\Command'],
+    [FCPATH . 'vendor/nails/common/src/Common/Console/Command/', 'Nails\Common\Console\Command'],
     [FCPATH . 'src/Console/Command/', 'App\Console\Command'],
 ];
 

@@ -1,4 +1,4 @@
-# Docs for `nailsapp/module-console`
+# Docs for `nails/module-console`
 > Documentation is a WIP.
 
 

@@ -1,5 +1,5 @@
 {
-    "name": "nailsapp/module-console",
+    "name": "nails/module-console",
     "keywords": ["Nails", "Shed Collective", "CodeIgniter", "Console Module", "CLI"],
     "homepage": "http://nailsapp.co.uk/modules/console",
     "description": "This is the \"Console\" module for Nails.",
@@ -21,7 +21,7 @@
     "prefer-stable": true,
     "require":
     {
-        "nailsapp/common": "dev-develop",
+        "nails/common": "dev-develop",
         "symfony/console": "3.*"
     },
     "require-dev":
