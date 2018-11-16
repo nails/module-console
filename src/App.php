@@ -48,8 +48,8 @@ final class App
          */
 
         $aCommandLocations = [
-            [FCPATH . 'vendor/nails/common/src/Common/Console/Command/', 'Nails\Common\Console\Command'],
-            [FCPATH . 'src/Console/Command/', 'App\Console\Command'],
+            [NAILS_APP_PATH . 'vendor/nails/common/src/Common/Console/Command/', 'Nails\Common\Console\Command'],
+            [NAILS_APP_PATH . 'src/Console/Command/', 'App\Console\Command'],
         ];
 
         $aModules = _NAILS_GET_MODULES();

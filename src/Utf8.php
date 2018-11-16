@@ -14,7 +14,7 @@ namespace Nails\Console;
 
 use Nails\Factory;
 
-require FCPATH . 'vendor/codeigniter/framework/system/core/Utf8.php';
+require NAILS_CI_SYSTEM_PATH . 'core/Utf8.php';
 
 class Utf8 extends \CI_Utf8
 {
