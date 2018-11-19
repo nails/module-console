@@ -68,7 +68,7 @@ class BaseMaker extends Base
         // --------------------------------------------------------------------------
 
         //  Check environment
-        if (Environment::not('DEVELOPMENT')) {
+        if (Environment::not(Environment::ENV_DEV)) {
             return $this->abort(
                 self::EXIT_CODE_FAILURE,
                 'This tool is only available on DEVELOPMENT environments'
