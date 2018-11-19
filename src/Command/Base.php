@@ -32,8 +32,9 @@ class Base extends Command
     /**
      * Executes the app
      *
-     * @param  InputInterface $oInput The Input Interface provided by Symfony
+     * @param  InputInterface  $oInput  The Input Interface provided by Symfony
      * @param  OutputInterface $oOutput The Output Interface provided by Symfony
+     *
      * @return int
      */
     protected function execute(InputInterface $oInput, OutputInterface $oOutput)
@@ -48,8 +49,9 @@ class Base extends Command
     /**
      * Confirms something with the user
      *
-     * @param  string $sQuestion The question to confirm
-     * @param  boolean $bDefault The default answer
+     * @param  string  $sQuestion The question to confirm
+     * @param  boolean $bDefault  The default answer
+     *
      * @return string
      */
     protected function confirm($sQuestion, $bDefault)
@@ -68,7 +70,8 @@ class Base extends Command
      * Asks the user for some input
      *
      * @param  string $mQuestion The question to ask
-     * @param  mixed $sDefault The default answer
+     * @param  mixed  $sDefault  The default answer
+     *
      * @return string
      */
     protected function ask($mQuestion, $sDefault)
@@ -85,13 +88,13 @@ class Base extends Command
     /**
      * Performs the abort functionality and returns the exit code
      *
-     * @param  array $aMessages The error message
      * @param  integer $iExitCode The exit code
+     * @param  array   $aMessages The error message
+     *
      * @return int
      */
-    protected function abort($iExitCode = self::EXIT_CODE_FAILURE, $aMessages = [])
+    protected function abort($iExitCode = self::EXIT_CODE_FAILURE, array $aMessages = [])
     {
-        $aMessages = (array) $aMessages;
         if ($iExitCode === self::EXIT_CODE_FAILURE) {
             $aMessages  = array_merge(['AN ERROR OCCURRED:', ''], $aMessages);
             $iPadSize   = 2;
@@ -126,13 +129,14 @@ class Base extends Command
     /**
      * Call another command within the app
      *
-     * @param string $sCommand The command to execute
-     * @param array $aArguments Any arguments to pass to the command
-     * @param bool $bInteractive Whether the command should be executed interactively
-     * @param bool $bSilent Whether the command should be executed silently
+     * @param string $sCommand     The command to execute
+     * @param array  $aArguments   Any arguments to pass to the command
+     * @param bool   $bInteractive Whether the command should be executed interactively
+     * @param bool   $bSilent      Whether the command should be executed silently
+     *
      * @return int
      */
-    protected function callCommand($sCommand, $aArguments = [], $bInteractive = true, $bSilent = false)
+    protected function callCommand($sCommand, array $aArguments = [], $bInteractive = true, $bSilent = false)
     {
         $oCmd       = $this->getApplication()->find($sCommand);
         $aArguments = array_merge(['command' => $sCommand], $aArguments);
