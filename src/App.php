@@ -3,6 +3,7 @@
 namespace Nails\Console;
 
 use Nails\Common\Service\ErrorHandler;
+use Nails\Components;
 use Nails\Console\Utf8;
 use Nails\Factory;
 use Symfony\Component\Console\Application;
@@ -102,7 +103,7 @@ final class App
             [NAILS_APP_PATH . 'src/Console/Command/', 'App\Console\Command'],
         ];
 
-        $aModules = _NAILS_GET_MODULES();
+        $aModules = Components::modules();
         foreach ($aModules as $oModule) {
             $aCommandLocations[] = [
                 $oModule->path . 'src/Console/Command',
