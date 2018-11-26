@@ -71,7 +71,7 @@ final class App
          */
         $oInput = Factory::service('Input');
         if (!$oInput::isCli()) {
-            ErrorHandler::die('This tool can only be used on the command line.');
+            ErrorHandler::halt('This tool can only be used on the command line.');
         }
 
 
