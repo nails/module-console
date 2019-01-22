@@ -34,7 +34,7 @@ final class App
          *---------------------------------------------------------------
          * Allows the app to execute code very early on in the console tool lifecycle
          */
-        if (class_exists('App\Console\Bootstrap') && is_callable('\App\Console\Bootstrap::preSystem')) {
+        if (class_exists('\App\Console\Bootstrap') && is_callable('\App\Console\Bootstrap::preSystem')) {
             \App\Console\Bootstrap::preSystem($this);
         }
 
@@ -154,7 +154,7 @@ final class App
          *---------------------------------------------------------------
          * Allows the app to execute code just before the command is called
          */
-        if (class_exists('App\Console\Bootstrap') && is_callable('\App\Console\Bootstrap::preCommand')) {
+        if (class_exists('\App\Console\Bootstrap') && is_callable('\App\Console\Bootstrap::preCommand')) {
             \App\Console\Bootstrap::preCommand($this);
         }
 
@@ -174,7 +174,7 @@ final class App
          *---------------------------------------------------------------
          * Allows the app to execute code just after the command is called
          */
-        if (class_exists('App\Console\Bootstrap') && is_callable('\App\Console\Bootstrap::postCommand')) {
+        if (class_exists('\App\Console\Bootstrap') && is_callable('\App\Console\Bootstrap::postCommand')) {
             \App\Console\Bootstrap::postCommand($this);
         }
 
@@ -185,7 +185,7 @@ final class App
          *---------------------------------------------------------------
          * Allows the app to execute code at the very end of the console tool lifecycle
          */
-        if (class_exists('App\Console\Bootstrap') && is_callable('\App\Console\Bootstrap::postSystem')) {
+        if (class_exists('\App\Console\Bootstrap') && is_callable('\App\Console\Bootstrap::postSystem')) {
             \App\Console\Bootstrap::postSystem($this);
         }
     }
