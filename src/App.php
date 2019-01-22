@@ -13,12 +13,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 final class App
 {
     /**
-     * Execues the console app
+     * Executes the console app
      *
      * @param string               $sEntryPoint      The path of the route index.php file
      * @param InputInterface|null  $oInputInterface  The input interface to use
      * @param OutputInterface|null $oOutputInterface The output interface to use
-     * @param bool                 $bAutoExit        Whether to autoexit from the application or not
+     * @param bool                 $bAutoExit        Whether to auto-exit from the application or not
      *
      * @throws \Nails\Common\Exception\FactoryException
      */
@@ -57,7 +57,7 @@ final class App
 
         /*
          *---------------------------------------------------------------
-         * Instanciate CI's Utf8 library; so we have the appropriate
+         * Instantiate CI's Utf8 library; so we have the appropriate
          * constants defined
          *---------------------------------------------------------------
          */
@@ -77,7 +77,7 @@ final class App
 
         /*
          *---------------------------------------------------------------
-         * Instanciate the application
+         * Instantiate the application
          *---------------------------------------------------------------
          */
         $oApp = new Application();
