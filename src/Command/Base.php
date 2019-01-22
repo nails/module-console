@@ -18,12 +18,12 @@ class Base extends Command
     // --------------------------------------------------------------------------
 
     /**
-     * @var \Symfony\Component\Console\Input\InputInterface
+     * @var InputInterface
      */
     protected $oInput;
 
     /**
-     * @var \Symfony\Component\Console\Output\OutputInterface
+     * @var OutputInterface
      */
     protected $oOutput;
 
@@ -135,6 +135,7 @@ class Base extends Command
      * @param bool   $bSilent      Whether the command should be executed silently
      *
      * @return int
+     * @throws \Exception
      */
     protected function callCommand($sCommand, array $aArguments = [], $bInteractive = true, $bSilent = false)
     {

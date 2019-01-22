@@ -12,8 +12,6 @@
 
 namespace Nails\Console;
 
-use Nails\Factory;
-
 require NAILS_CI_SYSTEM_PATH . 'core/Utf8.php';
 
 class Utf8 extends \CI_Utf8

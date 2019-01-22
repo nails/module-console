@@ -13,12 +13,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 final class App
 {
     /**
-     * Execues the console app
+     * Executes the console app
      *
      * @param string               $sEntryPoint      The path of the route index.php file
      * @param InputInterface|null  $oInputInterface  The input interface to use
      * @param OutputInterface|null $oOutputInterface The output interface to use
-     * @param bool                 $bAutoExit        Whether to autoexit from the application or not
+     * @param bool                 $bAutoExit        Whether to auto-exit from the application or not
      *
      * @throws \Nails\Common\Exception\FactoryException
      */
@@ -34,7 +34,7 @@ final class App
          *---------------------------------------------------------------
          * Allows the app to execute code very early on in the console tool lifecycle
          */
-        if (class_exists('App\Console\Bootstrap') && is_callable('\App\Console\Bootstrap::preSystem')) {
+        if (class_exists('\App\Console\Bootstrap') && is_callable('\App\Console\Bootstrap::preSystem')) {
             \App\Console\Bootstrap::preSystem($this);
         }
 
@@ -57,7 +57,7 @@ final class App
 
         /*
          *---------------------------------------------------------------
-         * Instanciate CI's Utf8 library; so we have the appropriate
+         * Instantiate CI's Utf8 library; so we have the appropriate
          * constants defined
          *---------------------------------------------------------------
          */
@@ -77,7 +77,7 @@ final class App
 
         /*
          *---------------------------------------------------------------
-         * Instanciate the application
+         * Instantiate the application
          *---------------------------------------------------------------
          */
         $oApp = new Application();
@@ -154,7 +154,7 @@ final class App
          *---------------------------------------------------------------
          * Allows the app to execute code just before the command is called
          */
-        if (class_exists('App\Console\Bootstrap') && is_callable('\App\Console\Bootstrap::preCommand')) {
+        if (class_exists('\App\Console\Bootstrap') && is_callable('\App\Console\Bootstrap::preCommand')) {
             \App\Console\Bootstrap::preCommand($this);
         }
 
@@ -174,7 +174,7 @@ final class App
          *---------------------------------------------------------------
          * Allows the app to execute code just after the command is called
          */
-        if (class_exists('App\Console\Bootstrap') && is_callable('\App\Console\Bootstrap::postCommand')) {
+        if (class_exists('\App\Console\Bootstrap') && is_callable('\App\Console\Bootstrap::postCommand')) {
             \App\Console\Bootstrap::postCommand($this);
         }
 
@@ -185,7 +185,7 @@ final class App
          *---------------------------------------------------------------
          * Allows the app to execute code at the very end of the console tool lifecycle
          */
-        if (class_exists('App\Console\Bootstrap') && is_callable('\App\Console\Bootstrap::postSystem')) {
+        if (class_exists('\App\Console\Bootstrap') && is_callable('\App\Console\Bootstrap::postSystem')) {
             \App\Console\Bootstrap::postSystem($this);
         }
     }
