@@ -12,8 +12,8 @@
 
 namespace Nails\Console\Exception\Path;
 
-use Nails\Common\Exception\NailsException;
+use Nails\Console\Exception\ConsoleException;
 
-class DoesNotExistException extends NailsException
+class DoesNotExistException extends ConsoleException
 {
 }
