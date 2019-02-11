@@ -14,21 +14,33 @@ class BaseMaker extends Base
 {
     /**
      * The permission to write files with
+     *
+     * @var int
      */
     const FILE_PERMISSION = 0755;
 
     /**
      * Where resources are stored
+     *
+     * @var string
      */
     const RESOURCE_PATH = '';
 
     // --------------------------------------------------------------------------
 
+    /**
+     * The passed arguments
+     *
+     * @var array
+     */
     protected $aArguments = [];
 
     // --------------------------------------------------------------------------
 
-    protected function configure()
+    /**
+     * Configure the command
+     */
+    protected function configure(): void
     {
         parent::configure();
         foreach ($this->aArguments as $aArgument) {
@@ -51,7 +63,7 @@ class BaseMaker extends Base
      *
      * @return int
      */
-    protected function execute(InputInterface $oInput, OutputInterface $oOutput)
+    protected function execute(InputInterface $oInput, OutputInterface $oOutput): int
     {
         parent::execute($oInput, $oOutput);
 
@@ -89,7 +101,7 @@ class BaseMaker extends Base
      * @return string
      * @throws \Exception
      */
-    protected function getResource($sFile, $aFields)
+    protected function getResource(string $sFile, array $aFields): string
     {
         if (empty(static::RESOURCE_PATH)) {
             throw new \Exception('RESOURCE_PATH is not defined');
@@ -115,7 +127,7 @@ class BaseMaker extends Base
      * @throws DoesNotExistException
      * @throws IsNotWritableException
      */
-    protected function createFile($sPath, $sContents = '')
+    protected function createFile(string $sPath, string $sContents = ''): void
     {
         $hHandle = fopen($sPath, 'w');
         if (!$hHandle) {
@@ -139,10 +151,10 @@ class BaseMaker extends Base
      * @throws DoesNotExistException
      * @throws IsNotWritableException
      */
-    protected function createPath($sPath)
+    protected function createPath(string $sPath): void
     {
         if (!is_dir($sPath)) {
-            if (!mkdir($sPath, self::FILE_PERMISSION, true)) {
+            if (!@mkdir($sPath, self::FILE_PERMISSION, true)) {
                 throw new DoesNotExistException('Path "' . $sPath . '" does not exist and could not be created');
             }
         }
@@ -159,7 +171,7 @@ class BaseMaker extends Base
      *
      * @return array
      */
-    protected function getArguments()
+    protected function getArguments(): array
     {
         Factory::helper('string');
         $aArguments = [];
@@ -194,7 +206,7 @@ class BaseMaker extends Base
                 $sError = '';
                 do {
                     $oArgument->value = $this->ask($sError . $sLabel . ':', '');
-                    $sError = '<error>Please specify</error> ';
+                    $sError           = '<error>Please specify</error> ';
                     if ($oArgument->required && empty($oArgument->value)) {
                         $bAskAgain = true;
                     } else {
