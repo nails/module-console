@@ -2,6 +2,7 @@
 
 namespace Nails\Console\Command;
 
+use Nails\Console\Exception\ConsoleException;
 use Nails\Console\Exception\Path\DoesNotExistException;
 use Nails\Console\Exception\Path\IsNotWritableException;
 use Nails\Environment;
@@ -26,6 +27,34 @@ class BaseMaker extends Base
      */
     const RESOURCE_PATH = '';
 
+    /**
+     * The number of spaces which comprise a tab
+     *
+     * @var int
+     */
+    const TAB_WIDTH = 4;
+
+    /**
+     * The path to the services file
+     *
+     * @var string
+     */
+    const SERVICE_PATH = NAILS_APP_PATH . 'application/services/services.php';
+
+    /**
+     * The path for the temporary service file (used while generating)
+     *
+     * @var string
+     */
+    const SERVICE_TEMP_PATH = CACHE_PATH . 'services.temp.php';
+
+    /**
+     * The name of the token in the service file
+     *
+     * @var string
+     */
+    const SERVICE_TOKEN = '';
+
     // --------------------------------------------------------------------------
 
     /**
@@ -34,6 +63,26 @@ class BaseMaker extends Base
      * @var array
      */
     protected $aArguments = [];
+
+
+    /**
+     * The resource created by fopen()
+     */
+    protected $fServicesHandle;
+
+    /**
+     * The location of the token
+     *
+     * @var int
+     */
+    protected $iServicesTokenLocation;
+
+    /**
+     * The indent of the token
+     *
+     * @var int
+     */
+    protected $iServicesIndent;
 
     // --------------------------------------------------------------------------
 
@@ -124,10 +173,11 @@ class BaseMaker extends Base
      * @param string $sPath     The file to create
      * @param string $sContents The contents to write
      *
+     * @return $this
      * @throws DoesNotExistException
      * @throws IsNotWritableException
      */
-    protected function createFile(string $sPath, string $sContents = ''): void
+    protected function createFile(string $sPath, string $sContents = ''): BaseMaker
     {
         $hHandle = fopen($sPath, 'w');
         if (!$hHandle) {
@@ -139,6 +189,8 @@ class BaseMaker extends Base
         }
 
         fclose($hHandle);
+
+        return $this;
     }
 
     // --------------------------------------------------------------------------
@@ -148,10 +200,11 @@ class BaseMaker extends Base
      *
      * @param string $sPath The path to create
      *
+     * @return $this
      * @throws DoesNotExistException
      * @throws IsNotWritableException
      */
-    protected function createPath(string $sPath): void
+    protected function createPath(string $sPath): BaseMaker
     {
         if (!is_dir($sPath)) {
             if (!@mkdir($sPath, self::FILE_PERMISSION, true)) {
@@ -162,6 +215,8 @@ class BaseMaker extends Base
         if (!is_writable($sPath)) {
             throw new IsNotWritableException('Path "' . $sPath . '" exists, but is not writable');
         }
+
+        return $this;
     }
 
     // --------------------------------------------------------------------------
@@ -224,5 +279,110 @@ class BaseMaker extends Base
         }
 
         return $aOut;
+    }
+
+    // --------------------------------------------------------------------------
+
+    /**
+     * Generates N number of tabs
+     *
+     * @param int $iNumberTabs The number of tabs to generate
+     *
+     * @return string
+     */
+    protected function tabs($iNumberTabs = 0): string
+    {
+        return str_repeat(' ', static::TAB_WIDTH * $iNumberTabs);
+    }
+
+    // --------------------------------------------------------------------------
+
+    /**
+     * Validate the service file is valid
+     *
+     * @return $this
+     * @throws ConsoleException
+     */
+    protected function validateServiceFile(): BaseMaker
+    {
+        if (empty(static::SERVICE_TOKEN)) {
+            throw new ConsoleException(
+                'SERVICE_TOKEN is not set'
+            );
+        }
+
+        //  Detect the services file
+        if (!file_exists(static::SERVICE_PATH)) {
+            throw new ConsoleException(
+                'Could not detect the app\'s services.php file: ' . static::SERVICE_PATH
+            );
+        }
+
+        //  Look for the generator token
+        $this->fServicesHandle = fopen(static::SERVICE_PATH, "r+");;
+        $bFound = false;
+        if ($this->fServicesHandle) {
+            $iLocation = 0;
+            while (($sLine = fgets($this->fServicesHandle)) !== false) {
+                if (preg_match('#^(\s*)// GENERATOR\[' . static::SERVICE_TOKEN . '\]#', $sLine, $aMatches)) {
+                    $bFound                       = true;
+                    $this->iServicesIndent        = strlen($aMatches[1]);
+                    $this->iServicesTokenLocation = $iLocation;
+                    break;
+                }
+                $iLocation = ftell($this->fServicesHandle);
+            }
+            if (!$bFound) {
+                fclose($this->fServicesHandle);
+                throw new ConsoleException(
+                    'Services file does not contain the generator token (i.e // GENERATOR[' . static::SERVICE_TOKEN . '])',
+                    'This token is required so that the tool can safely insert new definitions'
+                );
+            }
+        } else {
+            fclose($this->fServicesHandle);
+            throw new ConsoleException(
+                'Failed to open the services file for reading and writing: ' . static::SERVICE_PATH
+            );
+        }
+
+        return $this;
+    }
+
+    // --------------------------------------------------------------------------
+
+    /**
+     * Write the definitions to the services file
+     *
+     * @param array $aServiceDefinitions The definitions to write
+     *
+     * @return $this
+     */
+    protected function writeServiceFile(array $aServiceDefinitions = []): BaseMaker
+    {
+        //  Create a temporary file
+        $fTempHandle = fopen(static::SERVICE_TEMP_PATH, 'w+');
+        rewind($this->fServicesHandle);
+        $iLocation = 0;
+        while (($sLine = fgets($this->fServicesHandle)) !== false) {
+            if ($iLocation === $this->iServicesTokenLocation) {
+                fwrite(
+                    $fTempHandle,
+                    implode("\n", $aServiceDefinitions) . "\n"
+                );
+            }
+            fwrite($fTempHandle, $sLine);
+            $iLocation = ftell($this->fServicesHandle);
+        }
+
+        //  @todo (Pablo - 2019-02-11) - Sort the services by name
+
+        //  Move the temp services file into place
+        unlink(static::SERVICE_PATH);
+        rename(static::SERVICE_TEMP_PATH, static::SERVICE_PATH);
+        fclose($fTempHandle);
+        fclose($this->fServicesHandle);
+
+        return $this;
     }
 }
