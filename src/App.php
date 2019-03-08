@@ -181,6 +181,14 @@ final class App
 
         /*
          *---------------------------------------------------------------
+         * Nails Shotdown Handler
+         *---------------------------------------------------------------
+         */
+        \Nails\Bootstrap::shutdown();
+
+
+        /*
+         *---------------------------------------------------------------
          * App Bootstrapper: postSystem
          *---------------------------------------------------------------
          * Allows the app to execute code at the very end of the console tool lifecycle
