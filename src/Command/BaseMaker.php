@@ -322,8 +322,8 @@ class BaseMaker extends Base
         }
 
         //  Look for the generator token
-        $this->fServicesHandle = fopen(static::SERVICE_PATH, "r+");;
-        $bFound = false;
+        $this->fServicesHandle = fopen(static::SERVICE_PATH, 'r+');;
+        $bFound                = false;
         if ($this->fServicesHandle) {
             $iLocation = 0;
             while (($sLine = fgets($this->fServicesHandle)) !== false) {
@@ -338,12 +338,11 @@ class BaseMaker extends Base
             if (!$bFound) {
                 fclose($this->fServicesHandle);
                 throw new ConsoleException(
-                    'Services file does not contain the generator token (i.e // GENERATOR[' . $sToken . '])',
+                    'Services file does not contain the generator token (i.e // GENERATOR[' . $sToken . ']) ' .
                     'This token is required so that the tool can safely insert new definitions'
                 );
             }
         } else {
-            fclose($this->fServicesHandle);
             throw new ConsoleException(
                 'Failed to open the services file for reading and writing: ' . static::SERVICE_PATH
             );
