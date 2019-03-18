@@ -303,12 +303,14 @@ class BaseMaker extends Base
      * @return $this
      * @throws ConsoleException
      */
-    protected function validateServiceFile(): BaseMaker
+    protected function validateServiceFile(string $sToken = null): BaseMaker
     {
-        if (empty(static::SERVICE_TOKEN)) {
+        if (empty($sToken) && empty(static::SERVICE_TOKEN)) {
             throw new ConsoleException(
                 'SERVICE_TOKEN is not set'
             );
+        } elseif (empty($sToken)) {
+            $sToken = static::SERVICE_TOKEN;
         }
 
         //  Detect the services file
@@ -324,7 +326,7 @@ class BaseMaker extends Base
         if ($this->fServicesHandle) {
             $iLocation = 0;
             while (($sLine = fgets($this->fServicesHandle)) !== false) {
-                if (preg_match('#^(\s*)// GENERATOR\[' . static::SERVICE_TOKEN . '\]#', $sLine, $aMatches)) {
+                if (preg_match('#^(\s*)// GENERATOR\[' . $sToken . '\]#', $sLine, $aMatches)) {
                     $bFound                       = true;
                     $this->iServicesIndent        = strlen($aMatches[1]);
                     $this->iServicesTokenLocation = $iLocation;
@@ -335,7 +337,7 @@ class BaseMaker extends Base
             if (!$bFound) {
                 fclose($this->fServicesHandle);
                 throw new ConsoleException(
-                    'Services file does not contain the generator token (i.e // GENERATOR[' . static::SERVICE_TOKEN . '])',
+                    'Services file does not contain the generator token (i.e // GENERATOR[' . $sToken . '])',
                     'This token is required so that the tool can safely insert new definitions'
                 );
             }
