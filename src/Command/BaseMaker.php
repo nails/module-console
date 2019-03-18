@@ -2,6 +2,7 @@
 
 namespace Nails\Console\Command;
 
+use Nails\Common\Exception\NailsException;
 use Nails\Console\Exception\ConsoleException;
 use Nails\Console\Exception\Path\DoesNotExistException;
 use Nails\Console\Exception\Path\IsNotWritableException;
@@ -148,12 +149,12 @@ class BaseMaker extends Base
      * @param array  $aFields The template fields
      *
      * @return string
-     * @throws \Exception
+     * @throws NailsException
      */
     protected function getResource(string $sFile, array $aFields): string
     {
         if (empty(static::RESOURCE_PATH)) {
-            throw new \Exception('RESOURCE_PATH is not defined');
+            throw new NailsException('RESOURCE_PATH is not defined');
         }
         $sResource = require static::RESOURCE_PATH . $sFile;
 
