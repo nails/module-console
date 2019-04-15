@@ -3,6 +3,7 @@
 namespace Nails\Console\Command;
 
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\NullOutput;
@@ -32,8 +33,8 @@ class Base extends Command
     /**
      * Executes the app
      *
-     * @param  InputInterface  $oInput  The Input Interface provided by Symfony
-     * @param  OutputInterface $oOutput The Output Interface provided by Symfony
+     * @param InputInterface  $oInput  The Input Interface provided by Symfony
+     * @param OutputInterface $oOutput The Output Interface provided by Symfony
      *
      * @return int
      */
@@ -41,7 +42,21 @@ class Base extends Command
     {
         $this->oInput  = $oInput;
         $this->oOutput = $oOutput;
+        $this->setStyles($oOutput);
         return static::EXIT_CODE_SUCCESS;
+    }
+
+    // --------------------------------------------------------------------------
+
+    /**
+     * Adds additional styles to the output
+     *
+     * @param OutputInterface $oOutput The output interface
+     */
+    public function setStyles(OutputInterface $oOutput): void
+    {
+        $oWarningStyle = new OutputFormatterStyle('white', 'yellow');
+        $oOutput->getFormatter()->setStyle('warning', $oWarningStyle);
     }
 
     // --------------------------------------------------------------------------
@@ -49,8 +64,8 @@ class Base extends Command
     /**
      * Confirms something with the user
      *
-     * @param  string  $sQuestion The question to confirm
-     * @param  boolean $bDefault  The default answer
+     * @param string  $sQuestion The question to confirm
+     * @param boolean $bDefault  The default answer
      *
      * @return string
      */
@@ -69,8 +84,8 @@ class Base extends Command
     /**
      * Asks the user for some input
      *
-     * @param  string $mQuestion The question to ask
-     * @param  mixed  $sDefault  The default answer
+     * @param string $mQuestion The question to ask
+     * @param mixed  $sDefault  The default answer
      *
      * @return string
      */
@@ -88,8 +103,8 @@ class Base extends Command
     /**
      * Performs the abort functionality and returns the exit code
      *
-     * @param  integer $iExitCode The exit code
-     * @param  array   $aMessages The error message
+     * @param integer $iExitCode The exit code
+     * @param array   $aMessages The error message
      *
      * @return int
      */
@@ -122,6 +137,50 @@ class Base extends Command
         $this->oOutput->writeln('');
 
         return $iExitCode;
+    }
+
+    // --------------------------------------------------------------------------
+
+    /**
+     * Renders an error block
+     *
+     * @param array $aLines The lines to render
+     */
+    protected function error(array $aLines): void
+    {
+        $this->outputBlock($aLines, 'error');
+    }
+
+    // --------------------------------------------------------------------------
+
+    /**
+     * Renders an warning block
+     *
+     * @param array $aLines The lines to render
+     */
+    protected function warning(array $aLines): void
+    {
+        $this->outputBlock($aLines, 'warning');
+    }
+
+    // --------------------------------------------------------------------------
+
+    /**
+     * Renders an coloured block
+     *
+     * @param array  $aLines The lines to render
+     * @param string $sType  The type of block to render
+     */
+    protected function outputBlock(array $aLines, string $sType): void
+    {
+        $aLengths   = array_map('strlen', $aLines);
+        $iMaxLength = max($aLengths);
+
+        $this->oOutput->writeln('<' . $sType . '> ' . str_pad('', $iMaxLength, ' ') . ' </' . $sType . '>');
+        foreach ($aLines as $sLine) {
+            $this->oOutput->writeln('<' . $sType . '> ' . str_pad($sLine, $iMaxLength, ' ') . ' </' . $sType . '>');
+        }
+        $this->oOutput->writeln('<' . $sType . '> ' . str_pad('', $iMaxLength, ' ') . ' </' . $sType . '>');
     }
 
     // --------------------------------------------------------------------------
