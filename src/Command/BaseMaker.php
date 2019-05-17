@@ -117,10 +117,7 @@ class BaseMaker extends Base
     {
         parent::execute($oInput, $oOutput);
 
-        $oOutput->writeln('');
-        $oOutput->writeln('<info>----------------</info>');
-        $oOutput->writeln('<info>Nails Maker Tool</info>');
-        $oOutput->writeln('<info>----------------</info>');
+        $this->banner('Nails Maker Tool');
 
         // --------------------------------------------------------------------------
 

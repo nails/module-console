@@ -212,4 +212,22 @@ class Base extends Command
 
         return $oCmd->run($oCmdInput, $oCmdOutput);
     }
+
+    // --------------------------------------------------------------------------
+
+    /**
+     * Outputs a banner
+     *
+     * @param string $sText The text for the banner
+     * @param string $sType The type of banner
+     */
+    protected function banner(string $sText, string $sType = 'info')
+    {
+        $sText = trim($sText);
+        $this->oOutput->writeln('');
+        $this->oOutput->writeln('<' . $sType . '>' . str_repeat('-', mb_strlen($sText)) . '</' . $sType . '>');
+        $this->oOutput->writeln('<' . $sType . '>' . $sText . '</' . $sType . '>');
+        $this->oOutput->writeln('<' . $sType . '>' . str_repeat('-', mb_strlen($sText)) . '</' . $sType . '>');
+        $this->oOutput->writeln('');
+    }
 }
