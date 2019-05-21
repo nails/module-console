@@ -2,9 +2,9 @@
 
 namespace Nails\Console;
 
+use Nails\Common\Helper\Directory;
 use Nails\Common\Service\ErrorHandler;
 use Nails\Components;
-use Nails\Console\Utf8;
 use Nails\Factory;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\InputInterface;
@@ -38,14 +38,12 @@ final class App
             \App\Console\Bootstrap::preSystem($this);
         }
 
-
         /*
          *---------------------------------------------------------------
          * Nails Bootstrapper
          *---------------------------------------------------------------
          */
         \Nails\Bootstrap::run($sEntryPoint);
-
 
         /*
          *---------------------------------------------------------------
@@ -54,7 +52,6 @@ final class App
          */
         set_time_limit(0);
 
-
         /*
          *---------------------------------------------------------------
          * Instantiate CI's Utf8 library; so we have the appropriate
@@ -62,7 +59,6 @@ final class App
          *---------------------------------------------------------------
          */
         $oUtf8 = new Utf8();
-
 
         /*
          *---------------------------------------------------------------
@@ -74,14 +70,12 @@ final class App
             ErrorHandler::halt('This tool can only be used on the command line.');
         }
 
-
         /*
          *---------------------------------------------------------------
          * Instantiate the application
          *---------------------------------------------------------------
          */
-        $oApp = new Application();
-
+        $oApp = new Application('Nails Command Line Tool');
 
         /*
          *---------------------------------------------------------------
@@ -89,7 +83,6 @@ final class App
          *---------------------------------------------------------------
          */
         $oApp->setAutoExit($bAutoExit);
-
 
         /*
          *---------------------------------------------------------------
@@ -111,7 +104,6 @@ final class App
             ];
         }
 
-
         /*
          *---------------------------------------------------------------
          * Load Commands
@@ -119,12 +111,11 @@ final class App
          * Recursively look for commands
          */
 
-        Factory::helper('directory');
         $aCommands = [];
 
         function findCommands(&$aCommands, $sPath, $sNamespace)
         {
-            $aDirMap = directory_map($sPath);
+            $aDirMap = Directory::map($sPath);
             if (!empty($aDirMap)) {
                 foreach ($aDirMap as $sDir => $sFile) {
                     if (is_array($sFile)) {
@@ -147,7 +138,6 @@ final class App
             $oApp->add(new $sCommandClass());
         }
 
-
         /*
          *---------------------------------------------------------------
          * App Bootstrapper: preCommand
@@ -158,7 +148,6 @@ final class App
             \App\Console\Bootstrap::preCommand($this);
         }
 
-
         /*
          *---------------------------------------------------------------
          * Run the application
@@ -166,7 +155,6 @@ final class App
          * Go, go, go!
          */
         $oApp->run($oInputInterface, $oOutputInterface);
-
 
         /*
          *---------------------------------------------------------------
@@ -178,14 +166,12 @@ final class App
             \App\Console\Bootstrap::postCommand($this);
         }
 
-
         /*
          *---------------------------------------------------------------
          * Nails Shotdown Handler
          *---------------------------------------------------------------
          */
         \Nails\Bootstrap::shutdown();
-
 
         /*
          *---------------------------------------------------------------
