@@ -9,7 +9,7 @@ return <<<'EOD'
 <?php
 
 /**
- * The {{COMMAND}} console command
+ * The app:{{COMMAND}} console command
  *
  * @package  App
  * @category Console
@@ -21,15 +21,20 @@ use Nails\Console\Command\Base;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * Class {{CLASS_NAME}}
+ *
+ * @package {{NAMESPACE}}
+ */
 class {{CLASS_NAME}} extends Base
 {
     /**
-     * Configure the {{COMMAND}} command
+     * Configure the app:{{COMMAND}} command
      */
     protected function configure()
     {
         $this
-            ->setName('{{COMMAND}}')
+            ->setName('app:{{COMMAND}}')
             ->setDescription('@todo - describe what this command does');
     }
 
@@ -47,7 +52,7 @@ class {{CLASS_NAME}} extends Base
     {
         parent::execute($oInput, $oOutput);
 
-        $this->oOutput->writeln('The <info>{{COMMAND}}</info> console command');
+        $this->oOutput->writeln('The <info>app:{{COMMAND}}</info> console command');
 
         return static::EXIT_CODE_SUCCESS;
     }
