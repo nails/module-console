@@ -3,6 +3,7 @@
 namespace Nails\Console\Command;
 
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Exception\CommandNotFoundException;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
@@ -211,6 +212,25 @@ class Base extends Command
         }
 
         return $oCmd->run($oCmdInput, $oCmdOutput);
+    }
+
+    // --------------------------------------------------------------------------
+
+    /**
+     * Determines whether a command exists
+     *
+     * @param string $sCommand The command to test
+     *
+     * @return bool
+     */
+    protected function isCommand(string $sCommand)
+    {
+        try {
+            $this->getApplication()->find($sCommand);
+            return true;
+        } catch (CommandNotFoundException $e) {
+            return false;
+        }
     }
 
     // --------------------------------------------------------------------------
