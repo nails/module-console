@@ -93,15 +93,16 @@ final class App
 
         $aCommandLocations = [
             [NAILS_APP_PATH . 'vendor/nails/common/src/Common/Console/Command/', 'Nails\Common\Console\Command'],
-            [NAILS_APP_PATH . 'src/Console/Command/', 'App\Console\Command'],
         ];
 
-        $aModules = Components::modules();
-        foreach ($aModules as $oModule) {
-            $aCommandLocations[] = [
-                $oModule->path . 'src/Console/Command',
-                $oModule->namespace . 'Console\Command',
-            ];
+        foreach (Components::available() as $oModule) {
+            $aNamespacePaths = $oModule->getNamespaceRootPaths();
+            foreach ($aNamespacePaths as $sNamespacePath) {
+                $aCommandLocations[] = [
+                    $sNamespacePath . '/Console/Command/',
+                    $oModule->namespace . 'Console\\Command',
+                ];
+            }
         }
 
         /*
