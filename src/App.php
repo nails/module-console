@@ -136,7 +136,10 @@ final class App
         }
 
         foreach ($aCommands as $sCommandClass) {
-            $oApp->add(new $sCommandClass());
+            $oReflection = new \ReflectionClass($sCommandClass);
+            if ($oReflection->isInstantiable()) {
+                $oApp->add(new $sCommandClass());
+            }
         }
 
         /*
