@@ -21,7 +21,7 @@ class BaseAlias extends Base
     // --------------------------------------------------------------------------
 
     /**
-     * Configures the app
+     * Configures the command
      *
      * @throws NailsException
      * @return void
