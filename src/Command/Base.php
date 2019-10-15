@@ -12,8 +12,33 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
 
-class Base extends Command
+/**
+ * Allow the app to add functionality, if needed
+ */
+if (class_exists('\App\Console\Command\Base')) {
+    abstract class BaseMiddle extends \App\Console\Command\Base
+    {
+    }
+} else {
+    abstract class BaseMiddle extends Command
+    {
+    }
+}
+
+// --------------------------------------------------------------------------
+
+/**
+ * Class Base
+ *
+ * @package Nails\Console\Command
+ */
+class Base extends BaseMiddle
 {
+    /**
+     * Exit code statuses
+     *
+     * @var int
+     */
     const EXIT_CODE_SUCCESS = 0;
     const EXIT_CODE_FAILURE = 1;
 
