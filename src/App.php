@@ -4,6 +4,7 @@ namespace Nails\Console;
 
 use Nails\Common\Helper\Directory;
 use Nails\Common\Service\ErrorHandler;
+use Nails\Common\Service\Event;
 use Nails\Components;
 use Nails\Factory;
 use Symfony\Component\Console\Application;
@@ -30,20 +31,20 @@ final class App
     ) {
         /*
          *---------------------------------------------------------------
-         * App Bootstrapper: preSystem
-         *---------------------------------------------------------------
-         * Allows the app to execute code very early on in the console tool lifecycle
-         */
-        if (class_exists('\App\Console\Bootstrap') && is_callable('\App\Console\Bootstrap::preSystem')) {
-            \App\Console\Bootstrap::preSystem($this);
-        }
-
-        /*
-         *---------------------------------------------------------------
          * Nails Bootstrapper
          *---------------------------------------------------------------
          */
         \Nails\Bootstrap::run($sEntryPoint);
+
+        /*
+         *---------------------------------------------------------------
+         * Events: Startup
+         *---------------------------------------------------------------
+         */
+        /** @var Event $oEventService */
+        $oEventService = Factory::service('Event');
+        $oEventService
+            ->trigger(Events::STARTUP, Events::getEventNamespace());
 
         /*
          *---------------------------------------------------------------
@@ -144,13 +145,11 @@ final class App
 
         /*
          *---------------------------------------------------------------
-         * App Bootstrapper: preCommand
+         * Events: Ready
          *---------------------------------------------------------------
-         * Allows the app to execute code just before the command is called
          */
-        if (class_exists('\App\Console\Bootstrap') && is_callable('\App\Console\Bootstrap::preCommand')) {
-            \App\Console\Bootstrap::preCommand($this);
-        }
+        $oEventService
+            ->trigger(Events::READY, Events::getEventNamespace());
 
         /*
          *---------------------------------------------------------------
@@ -162,29 +161,17 @@ final class App
 
         /*
          *---------------------------------------------------------------
-         * App Bootstrapper: postCommand
-         *---------------------------------------------------------------
-         * Allows the app to execute code just after the command is called
-         */
-        if (class_exists('\App\Console\Bootstrap') && is_callable('\App\Console\Bootstrap::postCommand')) {
-            \App\Console\Bootstrap::postCommand($this);
-        }
-
-        /*
-         *---------------------------------------------------------------
-         * Nails Shotdown Handler
+         * Nails Shutdown Handler
          *---------------------------------------------------------------
          */
         \Nails\Bootstrap::shutdown();
 
         /*
          *---------------------------------------------------------------
-         * App Bootstrapper: postSystem
+         * Events: Shutdown
          *---------------------------------------------------------------
-         * Allows the app to execute code at the very end of the console tool lifecycle
          */
-        if (class_exists('\App\Console\Bootstrap') && is_callable('\App\Console\Bootstrap::postSystem')) {
-            \App\Console\Bootstrap::postSystem($this);
-        }
+        $oEventService
+            ->trigger(Events::SHUTDOWN, Events::getEventNamespace());
     }
 }

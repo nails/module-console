@@ -2,6 +2,11 @@
 
 namespace Nails\Console\Command;
 
+use Nails\Common\Exception\FactoryException;
+use Nails\Common\Exception\NailsException;
+use Nails\Common\Service\Event;
+use Nails\Console\Events;
+use Nails\Factory;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Exception\CommandNotFoundException;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
@@ -53,6 +58,34 @@ class Base extends BaseMiddle
      * @var OutputInterface
      */
     protected $oOutput;
+
+    // --------------------------------------------------------------------------
+
+    /**
+     * Runs the app, overridden to add Nails events
+     *
+     * @param InputInterface  $oInput
+     * @param OutputInterface $oOutput
+     *
+     * @return int
+     * @throws FactoryException
+     * @throws NailsException
+     * @throws \ReflectionException
+     */
+    public function run(InputInterface $oInput, OutputInterface $oOutput)
+    {
+        /** @var Event $oEventService */
+        $oEventService = Factory::service('Event');
+        $oEventService
+            ->trigger(Events::COMMAND_PRE, Events::getEventNamespace(), [$this]);
+
+        $iExitCode = parent::run($oInput, $oOutput);
+
+        $oEventService
+            ->trigger(Events::COMMAND_POST, Events::getEventNamespace(), [$this, $iExitCode]);
+
+        return $iExitCode;
+    }
 
     // --------------------------------------------------------------------------
 
