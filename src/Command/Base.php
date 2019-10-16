@@ -308,4 +308,47 @@ class Base extends BaseMiddle
         $this->oOutput->writeln('<' . $sType . '>' . str_repeat('-', mb_strlen($sText)) . '</' . $sType . '>');
         $this->oOutput->writeln('');
     }
+
+    // --------------------------------------------------------------------------
+
+    /**
+     * Display a neatly aligned key-value listing
+     *
+     * @param array $aKeyValuePairs
+     *
+     * @return $this
+     */
+    protected function keyValueList(
+        array $aKeyValuePairs,
+        bool $bPadTop = true,
+        bool $bPadBottom = true,
+        string $sSeparator = ':'
+    ): Command {
+
+        if (empty($aKeyValuePairs)) {
+            return $this;
+        }
+
+        $aKeys    = array_keys($aKeyValuePairs);
+        $aValues  = array_values($aKeyValuePairs);
+        $iKeysMax = max(array_map('strlen', $aKeys)) + 1;
+
+        $aKeys = array_map(function ($sKey) use ($iKeysMax, $sSeparator) {
+            return '<comment>' . $sKey . '</comment>' . $sSeparator . str_repeat(' ', $iKeysMax - strlen($sKey));
+        }, $aKeys);
+
+        $aKeyValuePairs = array_combine($aKeys, $aValues);
+
+        if ($bPadTop) {
+            $this->oOutput->writeln('');
+        }
+        foreach ($aKeyValuePairs as $sKey => $sValue) {
+            $this->oOutput->writeln($sKey . $sValue);
+        }
+        if ($bPadBottom) {
+            $this->oOutput->writeln('');
+        }
+
+        return $this;
+    }
 }
