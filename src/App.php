@@ -115,25 +115,28 @@ final class App
 
         $aCommands = [];
 
-        function findCommands(&$aCommands, $sPath, $sNamespace)
-        {
-            $aDirMap = Directory::map($sPath);
-            if (!empty($aDirMap)) {
-                foreach ($aDirMap as $sDir => $sFile) {
-                    if (is_array($sFile)) {
-                        findCommands($aCommands, $sPath . DIRECTORY_SEPARATOR . $sDir, $sNamespace . '\\' . trim($sDir, '/'));
-                    } else {
-                        $aFileInfo   = pathinfo($sFile);
-                        $sFileName   = basename($sFile, '.' . $aFileInfo['extension']);
-                        $aCommands[] = $sNamespace . '\\' . $sFileName;
-                    }
-                }
-            }
-        }
-
         foreach ($aCommandLocations as $aLocation) {
+
             list($sPath, $sNamespace) = $aLocation;
-            findCommands($aCommands, $sPath, $sNamespace);
+
+            $aDirMap = Directory::map($sPath, null, false);
+
+            foreach ($aDirMap as $sDir => $sFile) {
+
+                $aFileInfo   = pathinfo($sFile);
+                $aCommands[] = implode(
+                    '\\',
+                    array_filter(
+                        array_merge(
+                            [$sNamespace],
+                            $aFileInfo['dirname'] !== '.'
+                                ? explode(DIRECTORY_SEPARATOR, $aFileInfo['dirname'])
+                                : [],
+                            [$aFileInfo['filename']]
+                        )
+                    )
+                );
+            }
         }
 
         foreach ($aCommands as $sCommandClass) {
