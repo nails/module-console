@@ -2,11 +2,13 @@
 
 namespace Nails\Console\Command;
 
+use Exception;
 use Nails\Common\Exception\FactoryException;
 use Nails\Common\Exception\NailsException;
 use Nails\Common\Service\Event;
 use Nails\Console\Events;
 use Nails\Factory;
+use ReflectionException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Exception\CommandNotFoundException;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
@@ -70,7 +72,7 @@ class Base extends BaseMiddle
      * @return int
      * @throws FactoryException
      * @throws NailsException
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function run(InputInterface $oInput, OutputInterface $oOutput)
     {
@@ -253,7 +255,7 @@ class Base extends BaseMiddle
      * @param bool   $bSilent      Whether the command should be executed silently
      *
      * @return int
-     * @throws \Exception
+     * @throws Exception
      */
     protected function callCommand($sCommand, array $aArguments = [], $bInteractive = true, $bSilent = false)
     {

@@ -12,9 +12,11 @@
 
 namespace Nails\Console;
 
+use CI_Utf8;
+
 require NAILS_CI_SYSTEM_PATH . 'core/Utf8.php';
 
-class Utf8 extends \CI_Utf8
+class Utf8 extends CI_Utf8
 {
     public function __construct()
     {

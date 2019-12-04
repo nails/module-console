@@ -2,11 +2,16 @@
 
 namespace Nails\Console;
 
+use Nails\Bootstrap;
+use Nails\Common\Exception\FactoryException;
+use Nails\Common\Exception\NailsException;
 use Nails\Common\Helper\Directory;
 use Nails\Common\Service\ErrorHandler;
 use Nails\Common\Service\Event;
 use Nails\Components;
 use Nails\Factory;
+use ReflectionClass;
+use ReflectionException;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -21,7 +26,9 @@ final class App
      * @param OutputInterface|null $oOutputInterface The output interface to use
      * @param bool                 $bAutoExit        Whether to auto-exit from the application or not
      *
-     * @throws \Nails\Common\Exception\FactoryException
+     * @throws FactoryException
+     * @throws NailsException
+     * @throws ReflectionException
      */
     public function go(
         $sEntryPoint,
@@ -34,7 +41,7 @@ final class App
          * Nails Bootstrapper
          *---------------------------------------------------------------
          */
-        \Nails\Bootstrap::run($sEntryPoint);
+        Bootstrap::run($sEntryPoint);
 
         /*
          *---------------------------------------------------------------
@@ -117,7 +124,7 @@ final class App
 
         foreach ($aCommandLocations as $aLocation) {
 
-            list($sPath, $sNamespace) = $aLocation;
+            [$sPath, $sNamespace] = $aLocation;
 
             $aDirMap = Directory::map($sPath, null, false);
 
@@ -140,7 +147,7 @@ final class App
         }
 
         foreach ($aCommands as $sCommandClass) {
-            $oReflection = new \ReflectionClass($sCommandClass);
+            $oReflection = new ReflectionClass($sCommandClass);
             if ($oReflection->isInstantiable()) {
                 $oApp->add(new $sCommandClass());
             }
@@ -167,7 +174,7 @@ final class App
          * Nails Shutdown Handler
          *---------------------------------------------------------------
          */
-        \Nails\Bootstrap::shutdown();
+        Bootstrap::shutdown();
 
         /*
          *---------------------------------------------------------------

@@ -2,6 +2,7 @@
 
 namespace Nails\Console\Command;
 
+use Nails\Common\Exception\FactoryException;
 use Nails\Common\Exception\NailsException;
 use Nails\Console\Exception\ConsoleException;
 use Nails\Console\Exception\Path\DoesNotExistException;
@@ -356,6 +357,7 @@ class BaseMaker extends Base
      * @param array $aServiceDefinitions The definitions to write
      *
      * @return $this
+     * @throws FactoryException
      */
     protected function writeServiceFile(array $aServiceDefinitions = []): BaseMaker
     {
