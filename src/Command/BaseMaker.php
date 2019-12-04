@@ -4,6 +4,7 @@ namespace Nails\Console\Command;
 
 use Nails\Common\Exception\FactoryException;
 use Nails\Common\Exception\NailsException;
+use Nails\Common\Service\FileCache;
 use Nails\Console\Exception\ConsoleException;
 use Nails\Console\Exception\Path\DoesNotExistException;
 use Nails\Console\Exception\Path\IsNotWritableException;
@@ -44,11 +45,11 @@ class BaseMaker extends Base
     const SERVICE_PATH = NAILS_APP_PATH . 'application/services/services.php';
 
     /**
-     * The path for the temporary service file (used while generating)
+     * The name of the temporary service file (used while generating)
      *
      * @var string
      */
-    const SERVICE_TEMP_PATH = CACHE_PATH . 'services.temp.php';
+    const SERVICE_TEMP_NAME = 'services.temp.php';
 
     /**
      * The name of the token in the service file
@@ -360,8 +361,10 @@ class BaseMaker extends Base
      */
     protected function writeServiceFile(array $aServiceDefinitions = []): BaseMaker
     {
-        //  Create a temporary file
-        $fTempHandle = fopen(static::SERVICE_TEMP_PATH, 'w+');
+        /** @var FileCache $oFileCache */
+        $oFileCache  = Factory::service('FileCache');
+        $sTempFile   = $oFileCache->getDir() . static::SERVICE_TEMP_NAME;
+        $fTempHandle = fopen($sTempFile, 'w+');
         rewind($this->fServicesHandle);
         $iLocation = 0;
         while (($sLine = fgets($this->fServicesHandle)) !== false) {
@@ -379,7 +382,7 @@ class BaseMaker extends Base
 
         //  Move the temp services file into place
         unlink(static::SERVICE_PATH);
-        rename(static::SERVICE_TEMP_PATH, static::SERVICE_PATH);
+        rename($sTempFile, static::SERVICE_PATH);
         fclose($fTempHandle);
         fclose($this->fServicesHandle);
 
