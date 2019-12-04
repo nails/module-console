@@ -319,7 +319,7 @@ class BaseMaker extends Base
         }
 
         //  Look for the generator token
-        $this->fServicesHandle = fopen(static::SERVICE_PATH, 'r+');;
+        $this->fServicesHandle = fopen(static::SERVICE_PATH, 'r+');
         $bFound                = false;
         if ($this->fServicesHandle) {
             $iLocation = 0;
