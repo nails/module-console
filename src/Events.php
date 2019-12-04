@@ -33,14 +33,14 @@ class Events extends Base
     /**
      * Fired before the command is called
      *
-     * @param \Nails\Console\Command $oCommand The instance of the command being fired
+     * @param \Nails\Console\Command\Base $oCommand The instance of the command being fired
      */
     const COMMAND_PRE = 'COMMAND:PRE';
 
     /**
      * Fired after the command is called
      *
-     * @param \Nails\Console\Command $oCommand  The instance of the command being fired
+     * @param \Nails\Console\Command\Base $oCommand  The instance of the command being fired
      * @param int                    $iExitCode The exit code which the command generated
      */
     const COMMAND_POST = 'COMMAND:POST';
