@@ -324,7 +324,7 @@ class BaseMaker extends Base
         if ($this->fServicesHandle) {
             $iLocation = 0;
             while (($sLine = fgets($this->fServicesHandle)) !== false) {
-                if (preg_match('#^(\s*)// GENERATOR\[' . $sToken . '\]#', $sLine, $aMatches)) {
+                if (preg_match('#^(\s*)// GENERATOR\[' . $sToken . ']#', $sLine, $aMatches)) {
                     $bFound                       = true;
                     $this->iServicesIndent        = strlen($aMatches[1]);
                     $this->iServicesTokenLocation = $iLocation;
