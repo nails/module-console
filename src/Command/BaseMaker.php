@@ -130,7 +130,7 @@ class BaseMaker extends Base
         if (Environment::not(Environment::ENV_DEV)) {
             return $this->abort(
                 self::EXIT_CODE_FAILURE,
-                'This tool is only available on ' . Environment::ENV_DEV . ' environments'
+                ['This tool is only available on ' . Environment::ENV_DEV . ' environments']
             );
         }
 
