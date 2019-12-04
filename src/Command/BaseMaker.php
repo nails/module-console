@@ -66,7 +66,6 @@ class BaseMaker extends Base
      */
     protected $aArguments = [];
 
-
     /**
      * The resource created by fopen()
      */
@@ -109,8 +108,8 @@ class BaseMaker extends Base
     /**
      * Executes the app
      *
-     * @param  InputInterface  $oInput  The Input Interface provided by Symfony
-     * @param  OutputInterface $oOutput The Output Interface provided by Symfony
+     * @param InputInterface  $oInput  The Input Interface provided by Symfony
+     * @param OutputInterface $oOutput The Output Interface provided by Symfony
      *
      * @return int
      */
