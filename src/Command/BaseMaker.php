@@ -4,6 +4,7 @@ namespace Nails\Console\Command;
 
 use Nails\Common\Exception\FactoryException;
 use Nails\Common\Exception\NailsException;
+use Nails\Common\Exception\ValidationException;
 use Nails\Common\Service\FileCache;
 use Nails\Console\Exception\ConsoleException;
 use Nails\Console\Exception\Path\DoesNotExistException;
@@ -14,6 +15,11 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * Class BaseMaker
+ *
+ * @package Nails\Console\Command
+ */
 class BaseMaker extends Base
 {
     /**
@@ -99,7 +105,8 @@ class BaseMaker extends Base
                 getFromArray('name', $aArgument),
                 getFromArray('mode', $aArgument, InputArgument::OPTIONAL),
                 getFromArray('description', $aArgument),
-                getFromArray('default', $aArgument)
+                getFromArray('default', $aArgument),
+                getFromArray('validation', $aArgument)
             );
         }
     }
@@ -119,11 +126,6 @@ class BaseMaker extends Base
         parent::execute($oInput, $oOutput);
 
         $this->banner('Nails Maker Tool');
-
-        // --------------------------------------------------------------------------
-
-        //  Setup Factory - config files are required prior to set up
-        Factory::setup();
 
         // --------------------------------------------------------------------------
 
@@ -233,9 +235,10 @@ class BaseMaker extends Base
         if (!empty($this->aArguments)) {
             foreach ($this->aArguments as $aArgument) {
                 $aArguments[] = (object) [
-                    'name'     => getFromArray('name', $aArgument),
-                    'value'    => $this->oInput->getArgument(getFromArray('name', $aArgument)),
-                    'required' => getFromArray('required', $aArgument),
+                    'name'       => getFromArray('name', $aArgument),
+                    'value'      => $this->oInput->getArgument(getFromArray('name', $aArgument)),
+                    'required'   => getFromArray('required', $aArgument),
+                    'validation' => getFromArray('validation', $aArgument),
                 ];
             }
         } else {
@@ -243,9 +246,10 @@ class BaseMaker extends Base
             foreach ($aArgumentsRaw as $sField => $sValue) {
                 $sField       = strtoupper(camelcase_to_underscore($sField));
                 $aArguments[] = (object) [
-                    'name'     => $sField,
-                    'value'    => $sValue,
-                    'required' => true,
+                    'name'       => $sField,
+                    'value'      => $sValue,
+                    'required'   => true,
+                    'validation' => null,
                 ];
             }
         }
@@ -259,14 +263,26 @@ class BaseMaker extends Base
                 $sLabel = ucwords(strtolower($sLabel));
                 $sError = '';
                 do {
-                    $oArgument->value = $this->ask($sError . $sLabel . ':', '');
-                    $sError           = '<error>Please specify</error> ';
+                    $oArgument->value = $this->ask($sError . PHP_EOL . $sLabel . ':', '');
                     if ($oArgument->required && empty($oArgument->value)) {
+                        $sError    = '<error>Please specify</error> ';
                         $bAskAgain = true;
+                    } elseif (is_callable($oArgument->validation)) {
+                        try {
+                            $cFunction = $oArgument->validation;
+                            $cFunction($oArgument->value);
+                            $bAskAgain = false;
+                        } catch (ValidationException $e) {
+                            $sError    = '<error>' . $e->getMessage() . '</error> ';
+                            $bAskAgain = true;
+                        }
                     } else {
                         $bAskAgain = false;
                     }
                 } while ($bAskAgain);
+            } elseif (is_callable($oArgument->validation)) {
+                $cFunction = $oArgument->validation;
+                $cFunction($oArgument->value);
             }
         }
         unset($oArgument);
