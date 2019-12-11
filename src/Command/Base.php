@@ -5,6 +5,7 @@ namespace Nails\Console\Command;
 use Exception;
 use Nails\Common\Exception\FactoryException;
 use Nails\Common\Exception\NailsException;
+use Nails\Common\Exception\ValidationException;
 use Nails\Common\Service\Event;
 use Nails\Console\Events;
 use Nails\Factory;
@@ -352,5 +353,29 @@ class Base extends BaseMiddle
         }
 
         return $this;
+    }
+
+    // --------------------------------------------------------------------------
+
+    /**
+     * Validates that a string is a valid class name
+     *
+     * @param string $sClassName The string to validate
+     */
+    protected function validateClassName(string $sClassName)
+    {
+        $aSegments = explode('/', $sClassName);
+        foreach ($aSegments as $sSegment) {
+            if (!preg_match('/^[a-zA-Z_\x80-\xff][a-zA-Z0-9_\x80-\xff]*$/', $sSegment)) {
+                throw new ValidationException(
+                    implode("\n", [
+                        'Invalid class name',
+                        str_repeat(' ', strpos($sClassName, $sSegment)) . '↓',
+                        $sClassName,
+                        str_repeat(' ', strpos($sClassName, $sSegment)) . '↑',
+                    ])
+                );
+            }
+        }
     }
 }
