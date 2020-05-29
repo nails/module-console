@@ -5,12 +5,10 @@ namespace Nails\Console;
 use Nails\Bootstrap;
 use Nails\Common\Exception\FactoryException;
 use Nails\Common\Exception\NailsException;
-use Nails\Common\Helper\Directory;
 use Nails\Common\Service\ErrorHandler;
 use Nails\Common\Service\Event;
 use Nails\Components;
 use Nails\Factory;
-use ReflectionClass;
 use ReflectionException;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\InputInterface;
@@ -94,62 +92,18 @@ final class App
 
         /*
          *---------------------------------------------------------------
-         * Command Locations
+         * Load commands
          *---------------------------------------------------------------
-         * Define which directories to look in for Console Commands
          */
 
-        $aCommandLocations = [
-            [NAILS_APP_PATH . 'vendor/nails/common/src/Common/Console/Command/', 'Nails\Common\Console\Command'],
-        ];
+        foreach (Components::available() as $oComponent) {
 
-        foreach (Components::available() as $oModule) {
-            $aNamespacePaths = $oModule->getNamespaceRootPaths();
-            foreach ($aNamespacePaths as $sNamespacePath) {
-                $aCommandLocations[] = [
-                    $sNamespacePath . '/Console/Command/',
-                    $oModule->namespace . 'Console\\Command',
-                ];
-            }
-        }
+            $aClasses = $oComponent
+                ->findClasses('Console\\Command')
+                ->whichExtend(\Symfony\Component\Console\Command\Command::class);
 
-        /*
-         *---------------------------------------------------------------
-         * Load Commands
-         *---------------------------------------------------------------
-         * Recursively look for commands
-         */
-
-        $aCommands = [];
-
-        foreach ($aCommandLocations as $aLocation) {
-
-            [$sPath, $sNamespace] = $aLocation;
-
-            $aDirMap = Directory::map($sPath, null, false);
-
-            foreach ($aDirMap as $sDir => $sFile) {
-
-                $aFileInfo   = pathinfo($sFile);
-                $aCommands[] = implode(
-                    '\\',
-                    array_filter(
-                        array_merge(
-                            [$sNamespace],
-                            $aFileInfo['dirname'] !== '.'
-                                ? explode(DIRECTORY_SEPARATOR, $aFileInfo['dirname'])
-                                : [],
-                            [$aFileInfo['filename']]
-                        )
-                    )
-                );
-            }
-        }
-
-        foreach ($aCommands as $sCommandClass) {
-            $oReflection = new ReflectionClass($sCommandClass);
-            if ($oReflection->isInstantiable()) {
-                $oApp->add(new $sCommandClass());
+            foreach ($aClasses as $sClass) {
+                $oApp->add(new $sClass());
             }
         }
 
@@ -165,7 +119,6 @@ final class App
          *---------------------------------------------------------------
          * Run the application
          *---------------------------------------------------------------
-         * Go, go, go!
          */
         $oApp->run($oInputInterface, $oOutputInterface);
 
