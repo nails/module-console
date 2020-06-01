@@ -131,14 +131,14 @@ class Base extends BaseMiddle
      *
      * @return string
      */
-    protected function confirm($sQuestion, $bDefault)
+    protected function confirm($sQuestion, $bDefault): bool
     {
         $sQuestion = is_array($sQuestion) ? implode("\n", $sQuestion) : $sQuestion;
         $oHelper   = $this->getHelper('question');
         $sDefault  = (bool) $bDefault ? 'Y' : 'N';
         $oQuestion = new ConfirmationQuestion($sQuestion . ' [' . $sDefault . ']: ', $bDefault);
 
-        return $oHelper->ask($this->oInput, $this->oOutput, $oQuestion);
+        return (bool) $oHelper->ask($this->oInput, $this->oOutput, $oQuestion);
     }
 
     // --------------------------------------------------------------------------
