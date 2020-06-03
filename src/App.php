@@ -100,7 +100,8 @@ final class App
 
             $aClasses = $oComponent
                 ->findClasses('Console\\Command')
-                ->whichExtend(\Symfony\Component\Console\Command\Command::class);
+                ->whichExtend(\Symfony\Component\Console\Command\Command::class)
+                ->whichCanBeInstantiated();
 
             foreach ($aClasses as $sClass) {
                 $oApp->add(new $sClass());
