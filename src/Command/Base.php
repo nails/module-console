@@ -364,7 +364,9 @@ class Base extends BaseMiddle
      */
     protected function validateClassName(string $sClassName)
     {
-        $aSegments = explode('/', $sClassName);
+        $sClassName = str_replace('/', '\\', $sClassName);
+        $aSegments  = explode('\\', $sClassName);
+
         foreach ($aSegments as $sSegment) {
             if (!preg_match('/^[a-zA-Z_\x80-\xff][a-zA-Z0-9_\x80-\xff]*$/', $sSegment)) {
                 throw new ValidationException(
