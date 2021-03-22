@@ -26,6 +26,17 @@ use Symfony\Component\Console\Question\Question;
 if (class_exists('\App\Console\Command\Base')) {
     abstract class BaseMiddle extends \App\Console\Command\Base
     {
+        public function __construct()
+        {
+            if (!classExtends(parent::class, Command::class)) {
+                throw new NailsException(sprintf(
+                    'Class %s must extend %s',
+                    parent::class,
+                    Command::class
+                ));
+            }
+            parent::__construct();
+        }
     }
 } else {
     abstract class BaseMiddle extends Command
