@@ -13,15 +13,40 @@
 namespace Nails\Console;
 
 use CI_Utf8;
+use Nails\Functions;
 
-require NAILS_CI_SYSTEM_PATH . 'core/Utf8.php';
+require_once NAILS_CI_SYSTEM_PATH . 'core/Utf8.php';
 
+/**
+ * Class Utf8
+ *
+ * @package Nails\Console
+ */
 class Utf8 extends CI_Utf8
 {
+    /**
+     * Whether the class has been instantiated before.
+     *
+     * If this class is instantiated multiple times then calling the
+     * constructor will attempt to define constants again. The constructors
+     * only sets constants so no need to run it if it's already been run once.
+     *
+     * @var bool
+     */
+    protected static $INITIALISED = false;
+
+    // --------------------------------------------------------------------------
+
+    /**
+     * Utf8 constructor.
+     */
     public function __construct()
     {
-        static::defineCharsetConstants();
-        parent::__construct();
+        if (!static::$INITIALISED) {
+            static::$INITIALISED = true;
+            static::defineCharsetConstants();
+            parent::__construct();
+        }
     }
 
     // --------------------------------------------------------------------------
@@ -40,22 +65,20 @@ class Utf8 extends CI_Utf8
         ini_set('default_charset', $sCharset);
 
         if (extension_loaded('mbstring')) {
-            define('MB_ENABLED', true);
+            Functions::define('MB_ENABLED', true);
             @ini_set('mbstring.internal_encoding', $sCharset);
             mb_substitute_character('none');
+
         } else {
-            define('MB_ENABLED', false);
+            Functions::define('MB_ENABLED', false);
         }
 
         if (extension_loaded('iconv')) {
-            define('ICONV_ENABLED', true);
+            Functions::define('ICONV_ENABLED', true);
             @ini_set('iconv.internal_encoding', $sCharset);
-        } else {
-            define('ICONV_ENABLED', false);
-        }
 
-        if (is_php('5.6')) {
-            ini_set('php.internal_encoding', $sCharset);
+        } else {
+            Functions::define('ICONV_ENABLED', false);
         }
     }
 }
