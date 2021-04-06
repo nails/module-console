@@ -162,11 +162,12 @@ class Base extends BaseMiddle
      *
      * @return string
      */
-    protected function ask($mQuestion, $sDefault)
+    protected function ask($mQuestion, $sDefault, bool $bHideAnswer = false)
     {
         $mQuestion = is_array($mQuestion) ? implode("\n", $mQuestion) : $mQuestion;
         $oHelper   = $this->getHelper('question');
         $oQuestion = new Question($mQuestion . ' [' . $sDefault . ']: ', $sDefault);
+        $oQuestion->setHidden($bHideAnswer);
 
         return $oHelper->ask($this->oInput, $this->oOutput, $oQuestion);
     }
