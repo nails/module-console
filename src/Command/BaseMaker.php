@@ -404,4 +404,38 @@ class BaseMaker extends Base
 
         return $this;
     }
+
+    // --------------------------------------------------------------------------
+
+    /**
+     * Takes a string of deliminated classnames and parse into valid classes
+     *
+     * @param string $sClassNames The string to parse
+     * @param bool   $bSort       Whether to sort the results
+     *
+     * @return string[]
+     */
+    protected function parseClassNames(string $sClassNames, bool $bSort = true): array
+    {
+        $aClasses = array_filter(
+            array_map(
+                function ($sClass) {
+
+                    $aBits = preg_split('(:|\\\|\/)', trim($sClass));
+                    $aBits = array_map('ucfirst', $aBits);
+                    $aBits = implode('/', $aBits);
+
+                    return $aBits;
+
+                },
+                preg_split('/(,|;| )/', $sClassNames)
+            )
+        );
+
+        if ($bSort) {
+            sort($aClasses);
+        }
+
+        return $aClasses;
+    }
 }
