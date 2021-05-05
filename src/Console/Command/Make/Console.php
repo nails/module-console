@@ -9,6 +9,11 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * Class Console
+ *
+ * @package Nails\Console\Console\Command\Make
+ */
 class Console extends BaseMaker
 {
     const RESOURCE_PATH = __DIR__ . '/../../../../resources/console/';
@@ -87,17 +92,11 @@ class Console extends BaseMaker
         try {
 
             $aToCreate = [];
-            $aCommands = array_filter(
-                array_map(function ($sCommand) {
-                    return implode('/', array_map('ucfirst', explode('/', ucfirst(trim($sCommand)))));
-                }, explode(',', $aFields['COMMAND_NAME']))
-            );
-
-            sort($aCommands);
+            $aCommands = $this->parseClassNames($aFields['COMMAND_NAME']);;
 
             foreach ($aCommands as $sCommand) {
 
-                $aCommandBits = explode(':', $sCommand);
+                $aCommandBits = preg_split('/(:|\\\|\/)/', $sCommand);
                 $aCommandBits = array_map('ucfirst', $aCommandBits);
 
                 $sNamespace       = $this->generateNamespace($aCommandBits);
