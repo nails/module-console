@@ -144,7 +144,7 @@ abstract class Base extends BaseMiddle
      */
     protected function confirm($mQuestion, $bDefault): bool
     {
-        $sQuestion = is_array($mQuestion) ? implode("\n", $mQuestion) : $mQuestion;
+        $sQuestion = is_array($mQuestion) ? implode(PHP_EOL, $mQuestion) : $mQuestion;
         $oHelper   = $this->getHelper('question');
         $sDefault  = (bool) $bDefault ? 'Y' : 'N';
         $oQuestion = new ConfirmationQuestion($sQuestion . ' [' . $sDefault . ']: ', $bDefault);
@@ -165,7 +165,7 @@ abstract class Base extends BaseMiddle
      */
     protected function ask($mQuestion, $sDefault, bool $bHideAnswer = false)
     {
-        $sQuestion = is_array($mQuestion) ? implode("\n", $mQuestion) : $mQuestion;
+        $sQuestion = is_array($mQuestion) ? implode(PHP_EOL, $mQuestion) : $mQuestion;
         $oHelper   = $this->getHelper('question');
         $oQuestion = new Question($sQuestion . ' [' . $sDefault . ']: ', $sDefault);
         $oQuestion->setHidden($bHideAnswer);
@@ -383,7 +383,7 @@ abstract class Base extends BaseMiddle
         foreach ($aSegments as $sSegment) {
             if (!preg_match('/^[a-zA-Z_\x80-\xff][a-zA-Z0-9_\x80-\xff]*$/', $sSegment)) {
                 throw new ValidationException(
-                    implode("\n", [
+                    implode(PHP_EOL, [
                         'Invalid class name',
                         str_repeat(' ', strpos($sClassName, $sSegment)) . '↓',
                         $sClassName,

@@ -387,7 +387,7 @@ abstract class BaseMaker extends Base
             if ($iLocation === $this->iServicesTokenLocation) {
                 fwrite(
                     $fTempHandle,
-                    implode("\n", $aServiceDefinitions) . "\n"
+                    implode(PHP_EOL, $aServiceDefinitions) . PHP_EOL
                 );
             }
             fwrite($fTempHandle, $sLine);
