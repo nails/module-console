@@ -394,7 +394,89 @@ abstract class BaseMaker extends Base
             $iLocation = ftell($this->fServicesHandle);
         }
 
-        //  @todo (Pablo - 2019-02-11) - Sort the services by name
+        $aFile      = [];
+        $aServices  = [];
+        $aModels    = [];
+        $aFactories = [];
+        $aResources = [];
+
+        $aArray = &$aFile;
+
+        rewind($fTempHandle);
+        while (($sLine = fgets($fTempHandle)) !== false) {
+
+            if (preg_match('/^' . $this->tabs(1) . '\'services\'/', $sLine)) {
+                $aArray[] = $sLine;
+                $aArray[] = 'SERVICES';
+                $aArray   = &$aServices;
+                continue;
+
+            } elseif (preg_match('/^' . $this->tabs(1) . '\'models\'/', $sLine)) {
+                $aArray[] = $sLine;
+                $aArray[] = 'MODELS';
+                $aArray   = &$aModels;
+                continue;
+
+            } elseif (preg_match('/^' . $this->tabs(1) . '\'factories\'/', $sLine)) {
+                $aArray[] = $sLine;
+                $aArray[] = 'FACTORIES';
+                $aArray   = &$aFactories;
+                continue;
+
+            } elseif (preg_match('/^' . $this->tabs(1) . '\'resources\'/', $sLine)) {
+                $aArray[] = $sLine;
+                $aArray[] = 'RESOURCES';
+                $aArray   = &$aResources;
+                continue;
+
+            } elseif (preg_match('/^' . $this->tabs(1) . '\],/', $sLine)) {
+                $aArray = &$aFile;
+            }
+
+            if (!preg_match('/' . $this->tabs(2) . '\/\/ GENERATOR\[.*\]/', $sLine)) {
+                $aArray[] = $sLine;
+            }
+        }
+
+        fclose($fTempHandle);
+
+        $aMap = [
+            [$aServices, 'SERVICES'],
+            [$aModels, 'MODELS'],
+            [$aFactories, 'FACTORIES'],
+            [$aResources, 'RESOURCES'],
+        ];
+
+        foreach ($aMap as $aConfig) {
+
+            [$aLines, $sToken] = $aConfig;
+
+            $aSections   = [];
+            $sIdentifier = null;
+
+            foreach ($aLines as $sLine) {
+
+                if (preg_match('/^' . $this->tabs(2) . '\'(.*?)\' *=> *function/', $sLine, $aMatches)) {
+                    $sIdentifier = $aMatches[1];
+                }
+
+                if (!array_key_exists($sIdentifier, $aSections)) {
+                    $aSections[$sIdentifier] = '';
+                }
+
+                $aSections[$sIdentifier] .= $sLine;
+            }
+
+            ksort($aSections);
+
+            $aSections[] .= $this->tabs(2) . '// GENERATOR[' . $sToken . ']' . PHP_EOL;
+
+            $sSections = implode('', $aSections);
+            array_splice($aFile,array_search($sToken, $aFile), 1,$aSections);
+        }
+
+        $fTempHandle = fopen($sTempFile, 'w+');
+        fwrite($fTempHandle, implode('', $aFile));
 
         //  Move the temp services file into place
         unlink(static::SERVICE_PATH);
