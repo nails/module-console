@@ -10,3 +10,4 @@ parameters:
         - ../vendor/nails/common/helpers/tools.php
         - ../vendor/nails/common/helpers/string.php
         - ../vendor/codeigniter/framework/system/core/Common.php
+        - ../vendor/codeigniter/framework/system/core/Utf8.php
