@@ -1,5 +1,12 @@
 parameters:
-    level: 8
+    level: 5
     paths:
         - ../src
         - ../tests
+    bootstrapFiles:
+        - constants.php
+        - classes/App/Console/Command/Base.php
+    scanFiles:
+        - ../vendor/nails/common/helpers/tools.php
+        - ../vendor/nails/common/helpers/string.php
+        - ../vendor/codeigniter/framework/system/core/Common.php
