@@ -5,6 +5,7 @@ namespace Nails\Console\Command;
 use Nails\Common\Exception\FactoryException;
 use Nails\Common\Exception\NailsException;
 use Nails\Common\Exception\ValidationException;
+use Nails\Common\Helper\ArrayHelper;
 use Nails\Common\Service\FileCache;
 use Nails\Console\Exception\ConsoleException;
 use Nails\Console\Exception\Path\DoesNotExistException;
@@ -102,11 +103,10 @@ class BaseMaker extends Base
         parent::configure();
         foreach ($this->aArguments as $aArgument) {
             $this->addArgument(
-                getFromArray('name', $aArgument),
-                getFromArray('mode', $aArgument, InputArgument::OPTIONAL),
-                getFromArray('description', $aArgument),
-                getFromArray('default', $aArgument),
-                getFromArray('validation', $aArgument)
+                ArrayHelper::get('name', $aArgument),
+                ArrayHelper::get('mode', $aArgument, InputArgument::OPTIONAL),
+                ArrayHelper::get('description', $aArgument),
+                ArrayHelper::get('default', $aArgument)
             );
         }
     }
@@ -235,10 +235,10 @@ class BaseMaker extends Base
         if (!empty($this->aArguments)) {
             foreach ($this->aArguments as $aArgument) {
                 $aArguments[] = (object) [
-                    'name'       => getFromArray('name', $aArgument),
-                    'value'      => $this->oInput->getArgument(getFromArray('name', $aArgument)),
-                    'required'   => getFromArray('required', $aArgument),
-                    'validation' => getFromArray('validation', $aArgument),
+                    'name'       => ArrayHelper::get('name', $aArgument),
+                    'value'      => $this->oInput->getArgument(ArrayHelper::get('name', $aArgument)),
+                    'required'   => ArrayHelper::get('required', $aArgument),
+                    'validation' => ArrayHelper::get('validation', $aArgument),
                 ];
             }
         } else {

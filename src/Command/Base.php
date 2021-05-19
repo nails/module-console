@@ -137,14 +137,14 @@ class Base extends BaseMiddle
     /**
      * Confirms something with the user
      *
-     * @param string  $sQuestion The question to confirm
-     * @param boolean $bDefault  The default answer
+     * @param string|array $mQuestion The question to confirm
+     * @param bool         $bDefault  The default answer
      *
-     * @return string
+     * @return bool
      */
-    protected function confirm($sQuestion, $bDefault): bool
+    protected function confirm($mQuestion, $bDefault): bool
     {
-        $sQuestion = is_array($sQuestion) ? implode("\n", $sQuestion) : $sQuestion;
+        $sQuestion = is_array($mQuestion) ? implode("\n", $mQuestion) : $mQuestion;
         $oHelper   = $this->getHelper('question');
         $sDefault  = (bool) $bDefault ? 'Y' : 'N';
         $oQuestion = new ConfirmationQuestion($sQuestion . ' [' . $sDefault . ']: ', $bDefault);
@@ -157,16 +157,17 @@ class Base extends BaseMiddle
     /**
      * Asks the user for some input
      *
-     * @param string $mQuestion The question to ask
-     * @param mixed  $sDefault  The default answer
+     * @param string|array $mQuestion   The question to ask
+     * @param mixed        $sDefault    The default answer
+     * @param bool         $bHideAnswer Whether to hide the answer or not
      *
      * @return string
      */
     protected function ask($mQuestion, $sDefault, bool $bHideAnswer = false)
     {
-        $mQuestion = is_array($mQuestion) ? implode("\n", $mQuestion) : $mQuestion;
+        $sQuestion = is_array($mQuestion) ? implode("\n", $mQuestion) : $mQuestion;
         $oHelper   = $this->getHelper('question');
-        $oQuestion = new Question($mQuestion . ' [' . $sDefault . ']: ', $sDefault);
+        $oQuestion = new Question($sQuestion . ' [' . $sDefault . ']: ', $sDefault);
         $oQuestion->setHidden($bHideAnswer);
 
         return $oHelper->ask($this->oInput, $this->oOutput, $oQuestion);
