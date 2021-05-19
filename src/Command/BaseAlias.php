@@ -6,7 +6,7 @@ use Nails\Common\Exception\NailsException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class BaseAlias extends Base
+abstract class BaseAlias extends Base
 {
     /**
      * The command to execute

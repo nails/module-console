@@ -51,7 +51,7 @@ if (class_exists('\App\Console\Command\Base')) {
  *
  * @package Nails\Console\Command
  */
-class Base extends BaseMiddle
+abstract class Base extends BaseMiddle
 {
     /**
      * Exit code statuses

@@ -21,7 +21,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  *
  * @package Nails\Console\Command
  */
-class BaseMaker extends Base
+abstract class BaseMaker extends Base
 {
     /**
      * The permission to write files with
