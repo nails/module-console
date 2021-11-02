@@ -469,10 +469,10 @@ abstract class BaseMaker extends Base
 
             ksort($aSections);
 
-            $aSections[] .= $this->tabs(2) . '// GENERATOR[' . $sToken . ']' . PHP_EOL;
+            $aSections[] = $this->tabs(2) . '// GENERATOR[' . $sToken . ']' . PHP_EOL;
 
             $sSections = implode('', $aSections);
-            array_splice($aFile,array_search($sToken, $aFile), 1,$aSections);
+            array_splice($aFile, array_search($sToken, $aFile), 1, $aSections);
         }
 
         $fTempHandle = fopen($sTempFile, 'w+');
