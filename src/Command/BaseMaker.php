@@ -454,6 +454,8 @@ abstract class BaseMaker extends Base
             $aSections   = [];
             $sIdentifier = null;
 
+            //  Ignoring due to complete pass-by-references
+            //  @phpstan-ignore-next-line
             foreach ($aLines as $sLine) {
 
                 if (preg_match('/^' . $this->tabs(2) . '\'(.*?)\' *=> *function/', $sLine, $aMatches)) {
@@ -472,6 +474,8 @@ abstract class BaseMaker extends Base
             $aSections[] = $this->tabs(2) . '// GENERATOR[' . $sToken . ']' . PHP_EOL;
 
             $sSections = implode('', $aSections);
+            //  Ignoring due to complete pass-by-references
+            //  @phpstan-ignore-next-line
             array_splice($aFile, array_search($sToken, $aFile), 1, $aSections);
         }
 
