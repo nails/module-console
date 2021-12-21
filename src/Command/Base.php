@@ -17,6 +17,7 @@ use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
 
@@ -169,6 +170,26 @@ abstract class Base extends BaseMiddle
         $oHelper   = $this->getHelper('question');
         $oQuestion = new Question($sQuestion . ' [' . $sDefault . ']: ', $sDefault);
         $oQuestion->setHidden($bHideAnswer);
+
+        return $oHelper->ask($this->oInput, $this->oOutput, $oQuestion);
+    }
+
+    // --------------------------------------------------------------------------
+
+    /**
+     * Asks the user to select an option
+     *
+     * @param string|string[] $mQuestion The question to ask
+     * @param array           $aOptions  The chocies
+     * @param null            $sDefault  The default answer
+     *
+     * @return bool|float|int|mixed|string|string[]|null
+     */
+    protected function choose($mQuestion, array $aOptions, $sDefault = null)
+    {
+        $sQuestion = is_array($mQuestion) ? implode(PHP_EOL, $mQuestion) : $mQuestion;
+        $oHelper   = $this->getHelper('question');
+        $oQuestion = new ChoiceQuestion($sQuestion . ' [' . $sDefault . ']: ', $aOptions, $sDefault);
 
         return $oHelper->ask($this->oInput, $this->oOutput, $oQuestion);
     }
