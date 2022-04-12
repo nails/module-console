@@ -75,11 +75,6 @@ abstract class BaseMaker extends Base
     protected $aArguments = [];
 
     /**
-     * The resource created by fopen()
-     */
-    protected $fServicesHandle;
-
-    /**
      * The location of the token
      *
      * @var int
@@ -336,21 +331,21 @@ abstract class BaseMaker extends Base
         }
 
         //  Look for the generator token
-        $this->fServicesHandle = fopen(static::SERVICE_PATH, 'r+');
-        $bFound                = false;
-        if ($this->fServicesHandle) {
+        $fServicesHandle = fopen(static::SERVICE_PATH, 'r+');
+        $bFound          = false;
+        if ($fServicesHandle) {
             $iLocation = 0;
-            while (($sLine = fgets($this->fServicesHandle)) !== false) {
+            while (($sLine = fgets($fServicesHandle)) !== false) {
                 if (preg_match('#^(\s*)// GENERATOR\[' . $sToken . ']#', $sLine, $aMatches)) {
                     $bFound                       = true;
                     $this->iServicesIndent        = strlen($aMatches[1]);
                     $this->iServicesTokenLocation = $iLocation;
                     break;
                 }
-                $iLocation = ftell($this->fServicesHandle);
+                $iLocation = ftell($fServicesHandle);
             }
             if (!$bFound) {
-                fclose($this->fServicesHandle);
+                fclose($fServicesHandle);
                 throw new ConsoleException(
                     'Services file does not contain the generator token (i.e // GENERATOR[' . $sToken . ']) ' .
                     'This token is required so that the tool can safely insert new definitions'
@@ -378,12 +373,13 @@ abstract class BaseMaker extends Base
     protected function writeServiceFile(array $aServiceDefinitions = []): BaseMaker
     {
         /** @var FileCache $oFileCache */
-        $oFileCache  = Factory::service('FileCache');
-        $sTempFile   = $oFileCache->getDir() . static::SERVICE_TEMP_NAME;
-        $fTempHandle = fopen($sTempFile, 'w+');
-        rewind($this->fServicesHandle);
-        $iLocation = 0;
-        while (($sLine = fgets($this->fServicesHandle)) !== false) {
+        $oFileCache      = Factory::service('FileCache');
+        $sTempFile       = $oFileCache->getDir() . static::SERVICE_TEMP_NAME;
+        $fTempHandle     = fopen($sTempFile, 'w+');
+        $fServicesHandle = fopen(static::SERVICE_PATH, 'r+');
+        $iLocation       = 0;
+
+        while (($sLine = fgets($fServicesHandle)) !== false) {
             if ($iLocation === $this->iServicesTokenLocation) {
                 fwrite(
                     $fTempHandle,
@@ -391,7 +387,7 @@ abstract class BaseMaker extends Base
                 );
             }
             fwrite($fTempHandle, $sLine);
-            $iLocation = ftell($this->fServicesHandle);
+            $iLocation = ftell($fServicesHandle);
         }
 
         $aFile      = [];
@@ -486,7 +482,7 @@ abstract class BaseMaker extends Base
         unlink(static::SERVICE_PATH);
         rename($sTempFile, static::SERVICE_PATH);
         fclose($fTempHandle);
-        fclose($this->fServicesHandle);
+        fclose($fServicesHandle);
 
         return $this;
     }
