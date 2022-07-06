@@ -23,8 +23,13 @@ use Symfony\Component\Console\Question\Question;
 
 /**
  * Allow the app to add functionality, if needed
+ * Negative conditional helps with static analysis
  */
-if (class_exists('\App\Console\Command\Base')) {
+if (!class_exists('\App\Console\Command\Base')) {
+    abstract class BaseMiddle extends Command
+    {
+    }
+} else {
     abstract class BaseMiddle extends \App\Console\Command\Base
     {
         public function __construct()
@@ -38,10 +43,6 @@ if (class_exists('\App\Console\Command\Base')) {
             }
             parent::__construct();
         }
-    }
-} else {
-    abstract class BaseMiddle extends Command
-    {
     }
 }
 
