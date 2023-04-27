@@ -24,7 +24,7 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
-        "nails/common": "dev-develop",
+        "nails/common": "dev-feature/pre-new-admin",
         "symfony/console": "5.*"
     },
     "require-dev": {
