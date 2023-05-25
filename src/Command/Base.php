@@ -88,7 +88,7 @@ abstract class Base extends BaseMiddle
      * @throws NailsException
      * @throws ReflectionException
      */
-    public function run(InputInterface $oInput, OutputInterface $oOutput)
+    public function run(InputInterface $oInput, OutputInterface $oOutput): int
     {
         /** @var Event $oEventService */
         $oEventService = Factory::service('Event');
