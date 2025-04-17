@@ -24,7 +24,7 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
-        "nails/common": "dev-feature/pre-new-admin",
+        "nails/common": "dev-feature/pre-new-admin-ci-php8",
         "symfony/console": "6.*"
     },
     "require-dev": {
