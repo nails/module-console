@@ -313,7 +313,7 @@ abstract class BaseMaker extends Base
      * @return $this
      * @throws ConsoleException
      */
-    protected function validateServiceFile(string $sToken = null): BaseMaker
+    protected function validateServiceFile(?string $sToken = null): BaseMaker
     {
         if (empty($sToken) && empty(static::SERVICE_TOKEN)) {
             throw new ConsoleException(
