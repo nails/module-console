@@ -40,12 +40,12 @@ class Utf8 extends CI_Utf8
     /**
      * Utf8 constructor.
      */
-    public function __construct()
+    public function __construct($charset = 'utf8')
     {
         if (!static::$INITIALISED) {
             static::$INITIALISED = true;
             static::defineCharsetConstants();
-            parent::__construct();
+            parent::__construct($charset);
         }
     }
 
@@ -57,7 +57,7 @@ class Utf8 extends CI_Utf8
     protected static function defineCharsetConstants()
     {
         /**
-         * See vendor/codeigniter/framework/system/core/CodeIgniter.php for
+         * See vendor/pocketarc/codeigniter/system/core/CodeIgniter.php for
          * details of what/why this is happening.
          */
 
