@@ -30,8 +30,8 @@ final class App
      */
     public function go(
         $sEntryPoint,
-        InputInterface $oInputInterface = null,
-        OutputInterface $oOutputInterface = null,
+        ?InputInterface $oInputInterface = null,
+        ?OutputInterface $oOutputInterface = null,
         $bAutoExit = true
     ) {
         /*

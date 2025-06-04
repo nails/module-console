@@ -40,12 +40,12 @@ class Utf8 extends CI_Utf8
     /**
      * Utf8 constructor.
      */
-    public function __construct()
+    public function __construct($charset = 'utf8')
     {
         if (!static::$INITIALISED) {
             static::$INITIALISED = true;
             static::defineCharsetConstants();
-            parent::__construct();
+            parent::__construct($charset);
         }
     }
 
