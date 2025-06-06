@@ -114,7 +114,7 @@ final class App
          *---------------------------------------------------------------
          */
         $oEventService
-            ->trigger(Events::READY, Events::getEventNamespace());
+            ->trigger(Events::READY, Events::getEventNamespace(), [$oApp]);
 
         /*
          *---------------------------------------------------------------
@@ -136,6 +136,6 @@ final class App
          *---------------------------------------------------------------
          */
         $oEventService
-            ->trigger(Events::SHUTDOWN, Events::getEventNamespace());
+            ->trigger(Events::SHUTDOWN, Events::getEventNamespace(), [$oApp]);
     }
 }
