@@ -22,38 +22,11 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
 
 /**
- * Allow the app to add functionality, if needed
- * Negative conditional helps with static analysis
- */
-if (!class_exists('\App\Console\Command\Base')) {
-    abstract class BaseMiddle extends Command
-    {
-    }
-} else {
-    abstract class BaseMiddle extends \App\Console\Command\Base
-    {
-        public function __construct()
-        {
-            if (!classExtends(parent::class, Command::class)) {
-                throw new NailsException(sprintf(
-                    'Class %s must extend %s',
-                    parent::class,
-                    Command::class
-                ));
-            }
-            parent::__construct();
-        }
-    }
-}
-
-// --------------------------------------------------------------------------
-
-/**
  * Class Base
  *
  * @package Nails\Console\Command
  */
-abstract class Base extends BaseMiddle
+abstract class Base extends Command
 {
     /**
      * Exit code statuses
